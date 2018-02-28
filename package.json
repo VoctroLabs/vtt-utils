@@ -1,0 +1,19 @@
+{
+  "name": "vtt-utils",
+  "version": "0.0.0",
+  "description": "",
+  "main": "vtt-utils.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://bitbucket.org/voctrolabs/vtt-utils.git"
+  },
+  "author": "Alvaro Sarasua <alvaro.sarasua@voctrolabs.com>",
+  "license": "MIT",
+  "homepage": "https://bitbucket.org/voctrolabs/vtt-utils#readme",
+  "dependencies": {
+    "node-webvtt": "^1.0.3"
+  }
+}
