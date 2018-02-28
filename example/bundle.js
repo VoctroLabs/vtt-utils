@@ -1,7 +1,7 @@
 (function(){function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s}return e})()({1:[function(require,module,exports){
 //  run "browserify clientExample.js -o bundle.js" to generate bundle.js for index.html
 
-var voicefulvtt = require('./../voicefulvtt');
+var vttutils = require('./../vtt-utils');
 
 function loadFileAsText()
 {
@@ -20,7 +20,7 @@ function parseSubtitle()
 {
     var inputVttText = document.getElementById("inputSubtitleText").value;
 
-    document.getElementById("outputSubtitleText").value = voicefulvtt.parseToSentences(inputVttText);
+    document.getElementById("outputSubtitleText").value = vttutils.parseToSentences(inputVttText);
 }
 
 window.onload = function() {
@@ -28,7 +28,7 @@ window.onload = function() {
     document.getElementById("parseButton").addEventListener("click", parseSubtitle);
 };
 
-},{"./../voicefulvtt":6}],2:[function(require,module,exports){
+},{"./../vtt-utils":6}],2:[function(require,module,exports){
 'use strict';
 
 const parse = require('./lib/parser').parse;
@@ -489,7 +489,7 @@ module.exports = {
     },
 
     /**
-     * Checks that the times of two VTT subtitles are equal, which is mandatory for dubbing use case
+     * Checks that the start and end times of cues in two VTT subtitles are equal
      * @param  {String} srcVttText    Source subtitle text, in VTT format
      * @param  {String} targetVttText Target subtitle text, in VTT format
      * @return {Boolean}              True if both are equivalent, false otherwise
