@@ -16,7 +16,17 @@
     </div>
 
     <h2> Output subtitle </h2>
-    <input type="button" id = "parseButton" value="Parse sentences">
+    <input type="button" id = "parseButton" value="Parse input subtitle">
+    <br>
+    <br>
+    <select id="styleCombo">
+        <option value="neutral">Neutral</option>
+        <option value="angry">Angry</option>
+        <option value="sad">Sad</option>
+        <option value="happy">Happy</option>
+    </select>
+    <input type="number" id="cueIdx" min="1" max="20">
+    <input type="button" id = "assignStyleButton" value="Assign style to sentence">
     <br>
     <br>
     <textarea id="outputSubtitleText" cols="80" rows="25"></textarea>

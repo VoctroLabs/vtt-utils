@@ -22,7 +22,17 @@ function parseSubtitle()
     document.getElementById("outputSubtitleText").value = vttutils.parseToSentences(inputVttText);
 }
 
+function assignStyle()
+{
+    var style = document.getElementById("styleCombo").value;
+    var cueIdx = document.getElementById("cueIdx").value;
+    var inputVtt = document.getElementById("outputSubtitleText").value;
+
+    document.getElementById("outputSubtitleText").value = vttutils.assignStyleToCue(inputVtt, style, cueIdx);
+}
+
 window.onload = function() {
     document.getElementById("fileToLoad").addEventListener("change", loadFileAsText);
     document.getElementById("parseButton").addEventListener("click", parseSubtitle);
+    document.getElementById("assignStyleButton").addEventListener("click", assignStyle);
 };

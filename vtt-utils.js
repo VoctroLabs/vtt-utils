@@ -15,6 +15,20 @@ function formatTime(duration) {
     return hours + ":" + minutes + ":" + seconds + "." + milliseconds;
 }
 
+function createTextFromCues(cues)
+{
+    var NEWLINE = "\r\n";
+    var ARROW =  " --> ";
+    var outputText = "WEBVTT" + NEWLINE + NEWLINE;
+    for (var i = 0; i < cues.length - 1; i++) {
+        outputText += (i+1).toString() + NEWLINE +  formatTime(cues[i].start) + ARROW + formatTime(cues[i].end) + NEWLINE + cues[i].text + NEWLINE + NEWLINE;
+    }
+
+    outputText += (cues.length - 1).toString() + NEWLINE +  formatTime(cues[cues.length - 1].start) + ARROW + formatTime(cues[cues.length - 1].end) + NEWLINE + cues[cues.length - 1].text + NEWLINE;
+
+    return outputText;
+}
+
 module.exports = {
     /**
     * Parses an input subtitle provided as text and output the subtitle with sentence per cue
@@ -102,15 +116,7 @@ module.exports = {
             }
         }
 
-        var NEWLINE = "\r\n";
-        var ARROW =  " --> ";
-        var outputText = "WEBVTT" + NEWLINE + NEWLINE;
-        for (var i = 0; i < newCues.length; i++) {
-            newCues[i].identifier = (i+1).toString();
-            outputText += newCues[i].identifier + NEWLINE +  formatTime(newCues[i].start) + ARROW + formatTime(newCues[i].end) + NEWLINE + newCues[i].text + NEWLINE + NEWLINE;
-        }
-
-        return outputText;
+        return createTextFromCues(newCues);
     },
 
     /**
@@ -134,6 +140,22 @@ module.exports = {
         }
 
         return true;
+    },
+
+    assignStyleToCue: function (inputVttText, style, cueIdx){
+        cueIdx = parseInt(cueIdx) - 1;
+        var emphTag = "<emphasis level=\"" + style + "\">";
+        var reg = /<emphasis level\=\".*\">/
+
+        var inputVtt = webvtt.parse(inputVttText);
+
+        if (inputVtt.cues[cueIdx].text.search(reg) >= 0) {
+            inputVtt.cues[cueIdx].text = inputVtt.cues[cueIdx].text.replace(inputVtt.cues[cueIdx].text.match(reg)[0], emphTag);
+        } else {
+            inputVtt.cues[cueIdx].text = emphTag + inputVtt.cues[cueIdx].text + "</emphasis>";
+        }
+
+        return createTextFromCues(inputVtt.cues);
     },
 
     /**
