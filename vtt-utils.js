@@ -4,7 +4,7 @@ function formatTime(duration) {
     var seconds = parseInt((duration)%60)
         , minutes = parseInt((duration/(60))%60)
         , hours = parseInt((duration/(60*60))%24)
-        , milliseconds = (duration - seconds) * 1000;
+        , milliseconds = parseInt((duration - seconds) * 1000);
 
 
     hours = (hours < 10) ? "0" + hours : hours;
@@ -26,19 +26,43 @@ module.exports = {
 
         var newCues = [];
 
-        for (var i = 0; i < inputVtt.cues.length - 1; i++) {
+        for (var i = 0; i < inputVtt.cues.length; i++) {
             var cue = inputVtt.cues[i];
+            // remove voice closing tags, unnecessary since we are going to have a single voice per cue
+            cue.text = cue.text.replace(/<\/v>/g, '');
             var endsWithPoint = false;
 
+            var currentVoiceTag;
+            if (cue.text.indexOf('<v') >= 0) {
+                currentVoiceTag = cue.text.substring(cue.text.indexOf('<v'), cue.text.indexOf('>') + 1);
+            } else { //default
+                currentVoiceTag = '<v = Speaker1>';
+            }
+
             // more than one sentence in fragment
-            if (cue.text.search("\\. ") >= 0) {
-                var sentences = cue.text.split(". ");
+            var separators = ["\\\. ", "\\\? ", "\\\! "];
+            var reg = new RegExp(separators.join('|'), 'g');
+            if (cue.text.indexOf(". ") >= 0 || cue.text.indexOf("? ") >= 0 || cue.text.indexOf("! ") >= 0) {
+                var sentences = cue.text.split(reg);
+                var tokens = cue.text.match(reg);
                 for (var j = 0; j < sentences.length; j++) {
+                    if (j < sentences.length -1){
+                        sentences[j] += tokens[j];
+                    }
                     var newCue = Object.assign({}, cue);
-                    newCue.text = sentences[j];
-                    if (newCue.text.slice(-1) != "."){
+                    if (sentences[j].indexOf('<v') >= 0) {
+                        currentVoiceTag = sentences[j].substring(sentences[j].indexOf('<v'), sentences[j].indexOf('>') + 1);
+                        newCue.text = sentences[j];
+                    } else {
+                        newCue.text = currentVoiceTag + sentences[j];
+                    }
+
+                    newCue.text = newCue.text.trim();
+
+                    if (['.', '?', '!'].indexOf(newCue.text.slice(-1)) == -1){
                         newCue.text += ".";
                     }
+
                     newCue.start = cue.start + j*(cue.end - cue.start)/sentences.length;
                     newCue.end = cue.start + (j+1)*(cue.end - cue.start)/sentences.length;
                     newCues.push(newCue);
@@ -64,7 +88,7 @@ module.exports = {
                     } else if (nextCue.text.slice(-1) == ".") {
                         foundPoint = true;
                         var newCue = Object.assign({}, cue);
-                        newCue.text += " " + nextCue.text;
+                        newCue.text += " " + nextCue.text.replace(currentVoiceTag, '');
                         newCue.end = nextCue.end;
                         newCues.push(newCue);
                         i++;
@@ -80,7 +104,7 @@ module.exports = {
 
         var NEWLINE = "\r\n";
         var ARROW =  " --> ";
-        var outputText = "WEBVTT FILE" + NEWLINE + NEWLINE;
+        var outputText = "WEBVTT" + NEWLINE + NEWLINE;
         for (var i = 0; i < newCues.length; i++) {
             newCues[i].identifier = (i+1).toString();
             outputText += newCues[i].identifier + NEWLINE +  formatTime(newCues[i].start) + ARROW + formatTime(newCues[i].end) + NEWLINE + newCues[i].text + NEWLINE + NEWLINE;
@@ -110,5 +134,19 @@ module.exports = {
         }
 
         return true;
+    },
+
+    /**
+     * Generates JSON-formatted to generate synthesis with voiceful
+     * @param  {String} language Language identifier
+     * @param  {String} modelId  Voice model identifier
+     * @param  {String} vttText  Subtitle text, in VTT format
+     * @return {String}          JSON-formatted string for synthesis
+     */
+    getAsJSON: function(language, modelId, vttText){
+        var output = new Object();
+        output.speakers = [];
+
+        return [];
     }
 };
