@@ -1,0 +1,39 @@
+{
+	"speakers": [{
+            "language": "EN",
+			"model": "model1",
+            "defaultStyle": "neutral",
+			"sentences": [{
+					"text": "This is sentence <say-as interpret-as=“number”>1</say-as>",
+					"start": 1.5,
+					"end": 2.6,
+                    "lab": "/path/to/labfile",
+                    "f0": "/path/to/f0file"
+				},
+				{
+					"text": "This is sentence <say-as interpret-as=“number”>2</say-as>",
+					"start": 2.6,
+					"end": 3.6,
+                    "lab": [[0.0, 1.0, "aa"], [1.0, 1.5, "aa"]],
+                    "f0": [0.0, 0.0, 0.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 0.0]
+				}
+			]
+		},
+		{
+            "language": "EN",
+            "model": "model2",
+            "defaultStyle": "neutral",
+			"sentences": [{
+					"text": "<emphasis level=\"angry\">This is an angry sentence</emphasis>",
+					"start": 1.5,
+					"end": 2.6
+				},
+				{
+					"text": "A final sentence",
+					"start": 2.6,
+					"end": 3.6
+				}
+			]
+		}
+	]
+}

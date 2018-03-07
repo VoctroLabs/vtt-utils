@@ -31,8 +31,22 @@ function assignStyle()
     document.getElementById("outputSubtitleText").value = vttutils.assignStyleToCue(inputVtt, style, cueIdx);
 }
 
+function generateJson()
+{
+    var vttText = document.getElementById("outputSubtitleText").value;
+
+    document.getElementById("outputJsonText").value = vttutils.getAsJSON("EN", "model1", "neutral", vttText);
+}
+
+function toVTT()
+{
+    document.getElementById("inputSubtitleText").value = vttutils.srtToVtt(document.getElementById("inputSubtitleText").value);
+}
+
 window.onload = function() {
     document.getElementById("fileToLoad").addEventListener("change", loadFileAsText);
     document.getElementById("parseButton").addEventListener("click", parseSubtitle);
     document.getElementById("assignStyleButton").addEventListener("click", assignStyle);
+    document.getElementById("generateJsonButton").addEventListener("click", generateJson);
+    document.getElementById("toVTTButton").addEventListener("click", toVTT);
 };

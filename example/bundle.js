@@ -32,10 +32,24 @@ function assignStyle()
     document.getElementById("outputSubtitleText").value = vttutils.assignStyleToCue(inputVtt, style, cueIdx);
 }
 
+function generateJson()
+{
+    var vttText = document.getElementById("outputSubtitleText").value;
+
+    document.getElementById("outputJsonText").value = vttutils.getAsJSON("EN", "model1", "neutral", vttText);
+}
+
+function toVTT()
+{
+    document.getElementById("inputSubtitleText").value = vttutils.srtToVtt(document.getElementById("inputSubtitleText").value);
+}
+
 window.onload = function() {
     document.getElementById("fileToLoad").addEventListener("change", loadFileAsText);
     document.getElementById("parseButton").addEventListener("click", parseSubtitle);
     document.getElementById("assignStyleButton").addEventListener("click", assignStyle);
+    document.getElementById("generateJsonButton").addEventListener("click", generateJson);
+    document.getElementById("toVTTButton").addEventListener("click", toVTT);
 };
 
 },{"./../vtt-utils":6}],2:[function(require,module,exports){
@@ -411,9 +425,9 @@ const webvtt = require('node-webvtt');
 
 function formatTime(duration) {
     var seconds = parseInt((duration)%60)
-        , minutes = parseInt((duration/(60))%60)
-        , hours = parseInt((duration/(60*60))%24)
-        , milliseconds = parseInt((duration - seconds) * 1000);
+    , minutes = parseInt((duration/(60))%60)
+    , hours = parseInt((duration/(60*60))%24)
+    , milliseconds = parseInt((duration - seconds) * 1000);
 
 
     hours = (hours < 10) ? "0" + hours : hours;
@@ -438,7 +452,44 @@ function createTextFromCues(cues)
     return outputText;
 }
 
+class Sentence {
+    constructor() { //default constructor
+        this.text = "";
+        this.start = 0.0;
+        this.end = 0.0;
+    }
+}
+
+class SpeakerContent {
+    constructor(language, model, defaultStyle) { // constructor
+        this.language = language;
+        this.model = model;
+        this.defaultStyle = defaultStyle;
+        this.sentences = [];
+    }
+}
+
 module.exports = {
+
+    /**
+     * Generates a VTT-formatted subtitle from a SRT text
+     * @param  {String} inputSrtText Input subtitle text, in SRT format
+     * @return {String}              Output subtitle text, in VTT format
+     */
+    srtToVtt: function (inputSrtText){
+        // Change commas in text
+        var reg = /[0-9](,)[0-9]/g;
+        var commasMatches = inputSrtText.match(reg);
+
+        for (var i = 0; i < commasMatches.length; i++) {
+            inputSrtText = inputSrtText.replace(commasMatches[i], commasMatches[i].replace(',','.'));
+        }
+
+        var NEWLINE = "\r\n";
+        var outputText = "WEBVTT" + NEWLINE + NEWLINE + inputSrtText.trim() + NEWLINE;
+        return outputText;
+    },
+
     /**
     * Parses an input subtitle provided as text and output the subtitle with sentence per cue
     * @param  {String} inputVttText Input subtitle text, in VTT format
@@ -521,6 +572,9 @@ module.exports = {
                     }
                 }
             } else {
+                if (cue.text.indexOf('<v') < 0) {
+                    cue.text = currentVoiceTag + cue.text;
+                }
                 newCues.push(cue);
             }
         }
@@ -529,11 +583,11 @@ module.exports = {
     },
 
     /**
-     * Checks that the start and end times of cues in two VTT subtitles are equal
-     * @param  {String} srcVttText    Source subtitle text, in VTT format
-     * @param  {String} targetVttText Target subtitle text, in VTT format
-     * @return {Boolean}              True if both are equivalent, false otherwise
-     */
+    * Checks that the start and end times of cues in two VTT subtitles are equal
+    * @param  {String} srcVttText    Source subtitle text, in VTT format
+    * @param  {String} targetVttText Target subtitle text, in VTT format
+    * @return {Boolean}              True if both are equivalent, false otherwise
+    */
     checkSubtitlesEquivalency: function (srcVttText, targetVttText){
         const srcVtt = webvtt.parse(srcVttText);
         const targetVtt = webvtt.parse(targetVttText);
@@ -568,17 +622,35 @@ module.exports = {
     },
 
     /**
-     * Generates JSON-formatted to generate synthesis with voiceful
-     * @param  {String} language Language identifier
-     * @param  {String} modelId  Voice model identifier
-     * @param  {String} vttText  Subtitle text, in VTT format
-     * @return {String}          JSON-formatted string for synthesis
-     */
-    getAsJSON: function(language, modelId, vttText){
+    * Generates JSON-formatted to generate synthesis with voiceful
+    * @param  {String} language Language identifier
+    * @param  {String} modelId  Voice model identifier
+    * @param  {String} vttText  Subtitle text, in VTT format
+    * @return {String}          JSON-formatted string for synthesis
+    */
+    getAsJSON: function(language, modelId, defaultStyle, vttText){
         var output = new Object();
-        output.speakers = [];
+        output.speakers = new Object();
 
-        return [];
+        const vtt = webvtt.parse(vttText);
+        var reg = /\<v.*?\=.*?(.*?)\>/;
+
+        for (var i = 0; i < vtt.cues.length; i++) {
+            var regMatch = vtt.cues[i].text.match(reg)
+            var speaker = regMatch[1].trim();
+            if (!output.speakers.hasOwnProperty(speaker)) {
+                output.speakers[speaker] = new SpeakerContent(language, modelId, defaultStyle);
+            }
+
+            var sentence = new Sentence();
+            sentence.text = vtt.cues[i].text.replace(regMatch[0], '');
+            sentence.start = vtt.cues[i].start;
+            sentence.end = vtt.cues[i].end;
+
+            output.speakers[speaker].sentences.push(sentence);
+        }
+
+        return JSON.stringify(output);
     }
 };
 
