@@ -198,16 +198,36 @@ module.exports = {
         return createTextFromCues(inputVtt.cues);
     },
 
+    getSpeakers: function(vttText){
+        var speakers = [];
+
+        const vtt = webvtt.parse(vttText);
+        var reg = /\<v.*?\=.*?(.*?)\>/;
+
+        for (var i = 0; i < vtt.cues.length; i++) {
+            var regMatch = vtt.cues[i].text.match(reg)
+            var speaker = regMatch[1].trim();
+
+            if (speakers.indexOf(speaker) < 0) {
+                speakers.push(speaker);
+            }
+        }
+
+        return speakers;
+    },
+
     /**
     * Generates JSON-formatted to generate synthesis with voiceful
     * @param  {String} language Language identifier
-    * @param  {String} modelId  Voice model identifier
+    * @param  {String} modelsString   Speakers-voice models correspondence (e.g. {"Speaker1": "modelId1", "Speaker2": "modelId2"})
     * @param  {String} vttText  Subtitle text, in VTT format
     * @return {String}          JSON-formatted string for synthesis
     */
-    getAsJSON: function(language, modelId, defaultStyle, vttText){
+    getAsJSON: function(language, modelsString, defaultStyle, vttText){
         var output = new Object();
         output.speakers = new Object();
+
+        var models = JSON.parse(modelsString);
 
         const vtt = webvtt.parse(vttText);
         var reg = /\<v.*?\=.*?(.*?)\>/;
@@ -216,7 +236,7 @@ module.exports = {
             var regMatch = vtt.cues[i].text.match(reg)
             var speaker = regMatch[1].trim();
             if (!output.speakers.hasOwnProperty(speaker)) {
-                output.speakers[speaker] = new SpeakerContent(language, modelId, defaultStyle);
+                output.speakers[speaker] = new SpeakerContent(language, models[speaker], defaultStyle);
             }
 
             var sentence = new Sentence();

@@ -20,6 +20,28 @@ function parseSubtitle()
     var inputVttText = document.getElementById("inputSubtitleText").value;
 
     document.getElementById("outputSubtitleText").value = vttutils.parseToSentences(inputVttText);
+
+    var speakers = vttutils.getSpeakers(document.getElementById("outputSubtitleText").value);
+
+    var speakersDiv = document.getElementById("speakersDiv");
+    speakersDiv.innerHTML = "";
+    var title = document.createElement("h4");
+    title.innerHTML = "Speakers - models";
+    speakersDiv.appendChild(title);
+
+    for (var i = 0; i < speakers.length; i++) {
+        var label = document.createTextNode(speakers[i]);
+        var textInput = document.createElement("input");
+        textInput.id = speakers[i];
+        textInput.type = "text";
+        speakersDiv.appendChild(label);
+        speakersDiv.appendChild(textInput);
+        var newLine = document.createElement("br");
+        speakersDiv.appendChild(newLine);
+    }
+
+    var newLine = document.createElement("br");
+    speakersDiv.appendChild(newLine);
 }
 
 function assignStyle()
@@ -35,7 +57,16 @@ function generateJson()
 {
     var vttText = document.getElementById("outputSubtitleText").value;
 
-    document.getElementById("outputJsonText").value = vttutils.getAsJSON("EN", "model1", "neutral", vttText);
+    var speakersDiv = document.getElementById("speakersDiv");
+    var speakers = speakersDiv.getElementsByTagName("input");
+
+    var speakersModels = new Object();
+
+    for (var i = 0; i < speakers.length; i++) {
+        speakersModels[speakers[i].id] = speakers[i].value;
+    }
+
+    document.getElementById("outputJsonText").value = vttutils.getAsJSON("EN", JSON.stringify(speakersModels), "neutral", vttText);
 }
 
 function toVTT()

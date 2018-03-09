@@ -21,6 +21,28 @@ function parseSubtitle()
     var inputVttText = document.getElementById("inputSubtitleText").value;
 
     document.getElementById("outputSubtitleText").value = vttutils.parseToSentences(inputVttText);
+
+    var speakers = vttutils.getSpeakers(document.getElementById("outputSubtitleText").value);
+
+    var speakersDiv = document.getElementById("speakersDiv");
+    speakersDiv.innerHTML = "";
+    var title = document.createElement("h4");
+    title.innerHTML = "Speakers - models";
+    speakersDiv.appendChild(title);
+
+    for (var i = 0; i < speakers.length; i++) {
+        var label = document.createTextNode(speakers[i]);
+        var textInput = document.createElement("input");
+        textInput.id = speakers[i];
+        textInput.type = "text";
+        speakersDiv.appendChild(label);
+        speakersDiv.appendChild(textInput);
+        var newLine = document.createElement("br");
+        speakersDiv.appendChild(newLine);
+    }
+
+    var newLine = document.createElement("br");
+    speakersDiv.appendChild(newLine);
 }
 
 function assignStyle()
@@ -36,7 +58,16 @@ function generateJson()
 {
     var vttText = document.getElementById("outputSubtitleText").value;
 
-    document.getElementById("outputJsonText").value = vttutils.getAsJSON("EN", "model1", "neutral", vttText);
+    var speakersDiv = document.getElementById("speakersDiv");
+    var speakers = speakersDiv.getElementsByTagName("input");
+
+    var speakersModels = new Object();
+
+    for (var i = 0; i < speakers.length; i++) {
+        speakersModels[speakers[i].id] = speakers[i].value;
+    }
+
+    document.getElementById("outputJsonText").value = vttutils.getAsJSON("EN", JSON.stringify(speakersModels), "neutral", vttText);
 }
 
 function toVTT()
@@ -621,16 +652,36 @@ module.exports = {
         return createTextFromCues(inputVtt.cues);
     },
 
+    getSpeakers: function(vttText){
+        var speakers = [];
+
+        const vtt = webvtt.parse(vttText);
+        var reg = /\<v.*?\=.*?(.*?)\>/;
+
+        for (var i = 0; i < vtt.cues.length; i++) {
+            var regMatch = vtt.cues[i].text.match(reg)
+            var speaker = regMatch[1].trim();
+
+            if (speakers.indexOf(speaker) < 0) {
+                speakers.push(speaker);
+            }
+        }
+
+        return speakers;
+    },
+
     /**
     * Generates JSON-formatted to generate synthesis with voiceful
     * @param  {String} language Language identifier
-    * @param  {String} modelId  Voice model identifier
+    * @param  {String} modelsString   Speakers-voice models correspondence (e.g. {"Speaker1": "modelId1", "Speaker2": "modelId2"})
     * @param  {String} vttText  Subtitle text, in VTT format
     * @return {String}          JSON-formatted string for synthesis
     */
-    getAsJSON: function(language, modelId, defaultStyle, vttText){
+    getAsJSON: function(language, modelsString, defaultStyle, vttText){
         var output = new Object();
         output.speakers = new Object();
+
+        var models = JSON.parse(modelsString);
 
         const vtt = webvtt.parse(vttText);
         var reg = /\<v.*?\=.*?(.*?)\>/;
@@ -639,7 +690,7 @@ module.exports = {
             var regMatch = vtt.cues[i].text.match(reg)
             var speaker = regMatch[1].trim();
             if (!output.speakers.hasOwnProperty(speaker)) {
-                output.speakers[speaker] = new SpeakerContent(language, modelId, defaultStyle);
+                output.speakers[speaker] = new SpeakerContent(language, models[speaker], defaultStyle);
             }
 
             var sentence = new Sentence();
