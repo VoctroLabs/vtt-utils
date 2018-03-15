@@ -141,6 +141,9 @@ module.exports = {
                         var newCue = Object.assign({}, cue);
                         newCue.text += " " + nextCue.text.replace(currentVoiceTag, '');
                         newCue.end = nextCue.end;
+                        if (newCue.text.indexOf('<v') < 0) {
+                            newCue.text = currentVoiceTag + newCue.text;
+                        }
                         newCues.push(newCue);
                         i++;
                     } else {
