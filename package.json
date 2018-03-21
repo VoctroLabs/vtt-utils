@@ -1,6 +1,6 @@
 {
   "name": "vtt-utils",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Utils for handling VTT subtitles",
   "main": "vtt-utils.js",
   "scripts": {

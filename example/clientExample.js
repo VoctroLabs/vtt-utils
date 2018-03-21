@@ -60,13 +60,13 @@ function generateJson()
     var speakersDiv = document.getElementById("speakersDiv");
     var speakers = speakersDiv.getElementsByTagName("input");
 
-    var speakersModels = new Object();
+    var speakersModels = [];
 
     for (var i = 0; i < speakers.length; i++) {
-        speakersModels[speakers[i].id] = speakers[i].value;
+        speakersModels.push([speakers[i].id, speakers[i].value, "neutral"]);
     }
 
-    document.getElementById("outputJsonText").value = vttutils.getAsJSON("EN", JSON.stringify(speakersModels), "neutral", vttText);
+    document.getElementById("outputJsonText").value = vttutils.getAsJSON("en", JSON.stringify(speakersModels), vttText);
 }
 
 function toVTT()

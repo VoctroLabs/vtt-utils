@@ -46,6 +46,26 @@ class SpeakerContent {
     }
 }
 
+function getModelForSpeaker(models, speaker) {
+    for (var i = 0; i < models.length; i++) {
+        if (models[i][0] === speaker) {
+            return models[i][1];
+        }
+    }
+    return undefined;
+}
+
+function getDefaultStyleForSpeaker(models, speaker) {
+    for (var i = 0; i < models.length; i++) {
+        if (models[i][0] === speaker && models[i].length > 2) {
+            return models[i][2];
+        } else {
+            return undefined;
+        }
+    }
+    return undefined;
+}
+
 module.exports = {
 
     /**
@@ -221,12 +241,12 @@ module.exports = {
 
     /**
     * Generates JSON-formatted to generate synthesis with voiceful
-    * @param  {String} language Language identifier
-    * @param  {String} modelsString   Speakers-voice models correspondence (e.g. {"Speaker1": "modelId1", "Speaker2": "modelId2"})
-    * @param  {String} vttText  Subtitle text, in VTT format
-    * @return {String}          JSON-formatted string for synthesis
+    * @param  {String} language         Language identifier
+    * @param  {String} modelsString     Array with speakers-voice models-(optional)defaultStyle correspondence (e.g. '[["speaker1","model1","style1"],["speaker2","model2"]]')
+    * @param  {String} vttText          Subtitle text, in VTT format
+    * @return {String}                  JSON-formatted string for synthesis
     */
-    getAsJSON: function(language, modelsString, defaultStyle, vttText){
+    getAsJSON: function(language, modelsString, vttText){
         var output = new Object();
         output.speakers = new Object();
 
@@ -239,7 +259,7 @@ module.exports = {
             var regMatch = vtt.cues[i].text.match(reg)
             var speaker = regMatch[1].trim();
             if (!output.speakers.hasOwnProperty(speaker)) {
-                output.speakers[speaker] = new SpeakerContent(language, models[speaker], defaultStyle);
+                output.speakers[speaker] = new SpeakerContent(language, getModelForSpeaker(models, speaker), getDefaultStyleForSpeaker(models, speaker));
             }
 
             var sentence = new Sentence();
