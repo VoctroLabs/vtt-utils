@@ -40,8 +40,12 @@ class Sentence {
 class SpeakerContent {
     constructor(language, model, defaultStyle) { // constructor
         this.language = language;
-        this.model = model;
-        this.defaultStyle = defaultStyle;
+        if (model !== null) {
+            this.model = model;
+        }
+        if (defaultStyle !== null) {
+            this.defaultStyle = defaultStyle;
+        }
         this.sentences = [];
     }
 }

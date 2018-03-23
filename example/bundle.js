@@ -64,7 +64,12 @@ function generateJson()
     var speakersModels = [];
 
     for (var i = 0; i < speakers.length; i++) {
-        speakersModels.push([speakers[i].id, speakers[i].value, "neutral"]);
+        if (speakers[i].value === "") {
+            speakersModels.push([speakers[i].id, undefined, "neutral"]);
+        } else {
+            speakersModels.push([speakers[i].id, speakers[i].value, "neutral"]);
+        }
+
     }
 
     document.getElementById("outputJsonText").value = vttutils.getAsJSON("en", JSON.stringify(speakersModels), vttText);
@@ -494,8 +499,12 @@ class Sentence {
 class SpeakerContent {
     constructor(language, model, defaultStyle) { // constructor
         this.language = language;
-        this.model = model;
-        this.defaultStyle = defaultStyle;
+        if (model !== null) {
+            this.model = model;
+        }
+        if (defaultStyle !== null) {
+            this.defaultStyle = defaultStyle;
+        }
         this.sentences = [];
     }
 }

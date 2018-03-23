@@ -63,7 +63,12 @@ function generateJson()
     var speakersModels = [];
 
     for (var i = 0; i < speakers.length; i++) {
-        speakersModels.push([speakers[i].id, speakers[i].value, "neutral"]);
+        if (speakers[i].value === "") {
+            speakersModels.push([speakers[i].id, undefined, "neutral"]);
+        } else {
+            speakersModels.push([speakers[i].id, speakers[i].value, "neutral"]);
+        }
+
     }
 
     document.getElementById("outputJsonText").value = vttutils.getAsJSON("en", JSON.stringify(speakersModels), vttText);
