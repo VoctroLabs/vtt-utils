@@ -146,7 +146,7 @@ module.exports = {
 
             // Fragment does not contain a complete sentence
             else if (cue.text.slice(-1) != ".") {
-                foundPoint = false;
+                var foundPoint = false;
                 var cueIdx = 1;
                 while (!foundPoint) {
                     var nextCue = inputVtt.cues[i+cueIdx];

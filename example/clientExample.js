@@ -64,7 +64,7 @@ function generateJson()
 
     for (var i = 0; i < speakers.length; i++) {
         if (speakers[i].value === "") {
-            speakersModels.push([speakers[i].id, undefined, "neutral"]);
+            speakersModels.push([speakers[i].id, null, "neutral"]);
         } else {
             speakersModels.push([speakers[i].id, speakers[i].value, "neutral"]);
         }
