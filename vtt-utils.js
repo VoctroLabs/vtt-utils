@@ -24,7 +24,7 @@ function createTextFromCues(cues)
         outputText += (i+1).toString() + NEWLINE +  formatTime(cues[i].start) + ARROW + formatTime(cues[i].end) + NEWLINE + cues[i].text + NEWLINE + NEWLINE;
     }
 
-    outputText += (cues.length - 1).toString() + NEWLINE +  formatTime(cues[cues.length - 1].start) + ARROW + formatTime(cues[cues.length - 1].end) + NEWLINE + cues[cues.length - 1].text + NEWLINE;
+    outputText += (cues.length).toString() + NEWLINE +  formatTime(cues[cues.length - 1].start) + ARROW + formatTime(cues[cues.length - 1].end) + NEWLINE + cues[cues.length - 1].text + NEWLINE;
 
     return outputText;
 }
@@ -169,7 +169,7 @@ module.exports = {
                             newCue.text = currentVoiceTag + newCue.text;
                         }
                         newCues.push(newCue);
-                        i++;
+                        i += cueIdx;
                     } else {
                         cue.text += " " + nextCue.text;
                         cueIdx++;
