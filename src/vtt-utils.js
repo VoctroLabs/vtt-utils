@@ -74,7 +74,7 @@ function getDefaultStyleForSpeaker(models, speaker) {
  * @param  {String} inputSrtText Input subtitle text, in SRT format
  * @return {String}              Output subtitle text, in VTT format
  */
-export function srtToVtt(inputSrtText){
+function srtToVtt(inputSrtText){
     // Change commas in text
     let reg = /[0-9](,)[0-9]/g;
     let commasMatches = inputSrtText.match(reg);
@@ -93,7 +93,7 @@ export function srtToVtt(inputSrtText){
 * @param  {String} inputVttText Input subtitle text, in VTT format
 * @return {String}              Output subtitle text, in VTT format
 */
-export function parseToSentences(inputVttText){
+function parseToSentences(inputVttText){
     const inputVtt = webvtt.parse(inputVttText);
 
     let newCues = [];
@@ -190,7 +190,7 @@ export function parseToSentences(inputVttText){
 * @param  {String} targetVttText Target subtitle text, in VTT format
 * @return {Boolean}              True if both are equivalent, false otherwise
 */
-export function checkSubtitlesEquivalency(srcVttText, targetVttText){
+function checkSubtitlesEquivalency(srcVttText, targetVttText){
     const srcVtt = webvtt.parse(srcVttText);
     const targetVtt = webvtt.parse(targetVttText);
 
@@ -207,7 +207,7 @@ export function checkSubtitlesEquivalency(srcVttText, targetVttText){
     return true;
 }
 
-export function assignStyleToCue(inputVttText, style, cueIdx){
+function assignStyleToCue(inputVttText, style, cueIdx){
     cueIdx = parseInt(cueIdx) - 1;
     let emphTag = "<emphasis level=\"" + style + "\">";
     let reg = /<emphasis level\=\".*\">/
@@ -223,22 +223,17 @@ export function assignStyleToCue(inputVttText, style, cueIdx){
     return createTextFromCues(inputVtt.cues);
 }
 
-export function getSpeakers(vttText){
-    let speakers = [];
+function getSpeaker(cueText) {
+    const regExp = /<v.*?=.*?(.*?)>/;
+    const match = cueText.match(regExp);
+    return match[1].trim();
+}
 
+function getSpeakers(vttText){
     const vtt = webvtt.parse(vttText);
-    let reg = /\<v.*?\=.*?(.*?)\>/;
-
-    for (let i = 0; i < vtt.cues.length; i++) {
-        let regMatch = vtt.cues[i].text.match(reg)
-        let speaker = regMatch[1].trim();
-
-        if (speakers.indexOf(speaker) < 0) {
-            speakers.push(speaker);
-        }
-    }
-
-    return speakers;
+    const speakers = new Map();
+    vtt.cues.forEach(cue => speakers.set(getSpeaker(cue.text), true));
+    return Array.from(speakers.keys());
 }
 
 /**
@@ -280,6 +275,7 @@ export default {
     parseToSentences,
     checkSubtitlesEquivalency,
     assignStyleToCue,
+    getSpeaker,
     getSpeakers,
     getAsJSON,
     webvtt

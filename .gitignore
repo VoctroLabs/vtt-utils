@@ -62,6 +62,3 @@ Temporary Items
 # Build files
 example/bundle.js
 lib
-
-# Other
-package-lock.json
