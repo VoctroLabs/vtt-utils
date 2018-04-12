@@ -11,11 +11,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://bitbucket.org/voctrolabs/vtt-utils.git"
+    "url": "git@github.com:VoctroLabs/vtt-utils.git"
   },
   "author": "Alvaro Sarasua <alvaro.sarasua@voctrolabs.com>",
   "license": "MIT",
-  "homepage": "https://bitbucket.org/voctrolabs/vtt-utils#readme",
+  "homepage": "https://github.com/VoctroLabs/vtt-utils",
   "dependencies": {
     "@voctrolabs/node-webvtt": "^1.0.4"
   },
