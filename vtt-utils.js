@@ -4,7 +4,7 @@ function formatTime(duration) {
     var seconds = parseInt((duration)%60)
     , minutes = parseInt((duration/(60))%60)
     , hours = parseInt((duration/(60*60))%24)
-    , milliseconds = parseInt((duration - seconds) * 1000);
+    , milliseconds = parseInt(((duration)%60 - seconds) * 1000);
 
 
     hours = (hours < 10) ? "0" + hours : hours;
@@ -104,7 +104,7 @@ module.exports = {
         for (var i = 0; i < inputVtt.cues.length; i++) {
             var cue = inputVtt.cues[i];
             // remove voice closing tags, unnecessary since we are going to have a single voice per cue
-            cue.text = cue.text.replace(/<\/v>/g, '');
+            cue.text = cue.text.replace(/<\/v>/g, '').trim();
             var endsWithPoint = false;
 
             var currentVoiceTag;
@@ -150,6 +150,7 @@ module.exports = {
                 var cueIdx = 1;
                 while (!foundPoint) {
                     var nextCue = inputVtt.cues[i+cueIdx];
+                    nextCue.text = nextCue.text.replace(/<\/v>/g, '').trim();
                     // Next fragment has several sentences. We take the end of 1st and continue
                     if (nextCue.text.search("\\. ") >= 0) {
                         foundPoint = true;
