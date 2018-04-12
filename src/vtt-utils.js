@@ -270,6 +270,11 @@ function getAsJSON(language, modelsString, vttText){
     return JSON.stringify(output);
 }
 
+// Return the text of a cue without tags
+function removeTags(cueText) {
+  return cueText.replace(/<.*?>/g, '');
+}
+
 export default {
     srtToVtt,
     parseToSentences,
@@ -278,5 +283,6 @@ export default {
     getSpeaker,
     getSpeakers,
     getAsJSON,
+    removeTags,
     webvtt
 }

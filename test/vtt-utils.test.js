@@ -24,4 +24,9 @@ describe('VTTUtils', () => {
     speaker.should.equal('Speaker2');
   });
 
+  it('should remove cue tags', () => {
+    const speaker = VTTUtils.removeTags("<v = Speaker2>I'm Speaker2 and this is the second time I talk,");
+    speaker.should.equal("I'm Speaker2 and this is the second time I talk,");
+  });
+
 });
