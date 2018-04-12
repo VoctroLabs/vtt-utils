@@ -1,6 +1,6 @@
 //  run "browserify clientExample.js -o bundle.js" to generate bundle.js for index.html
 
-var vttutils = require('./../vtt-utils');
+var vttutils = require('../lib/vtt-utils');
 
 function loadFileAsText()
 {

@@ -1,9 +1,12 @@
 {
-  "name": "vtt-utils",
+  "name": "@voctrolabs/vtt-utils",
   "version": "0.2.7",
   "description": "Utils for handling VTT subtitles",
-  "main": "vtt-utils.js",
+  "main": "./lib/vtt-utils.js",
   "scripts": {
+    "build": "babel src --out-dir lib --source-maps",
+    "build-example": "browserify example/clientExample.js -o example/bundle.js",
+    "prepare": "npm run-script build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -14,6 +17,12 @@
   "license": "MIT",
   "homepage": "https://bitbucket.org/voctrolabs/vtt-utils#readme",
   "dependencies": {
-    "node-webvtt": "^1.0.3"
+    "@voctrolabs/node-webvtt": "^1.0.4"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "browserify": "^16.2.0"
   }
 }
