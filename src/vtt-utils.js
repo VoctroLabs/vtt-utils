@@ -1,4 +1,4 @@
-import webvtt from 'node-webvtt';
+import webvtt from '@voctrolabs/node-webvtt';
 
 function formatTime(duration) {
     let seconds = parseInt((duration)%60)
