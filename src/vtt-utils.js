@@ -1,5 +1,11 @@
 import webvtt from '@voctrolabs/node-webvtt';
 
+const regExps = {
+    speaker: /<v.*?=.*?(.*?)>/,
+    style: /<emphasis level="(?<style>.*)">/,
+    tags: /<.*?>/g
+};
+
 function formatTime(duration) {
     let seconds = parseInt((duration)%60)
     , minutes = parseInt((duration/(60))%60)
@@ -208,14 +214,12 @@ function checkSubtitlesEquivalency(srcVttText, targetVttText){
 }
 
 function assignStyleToCue(inputVttText, style, cueIdx){
-    cueIdx = parseInt(cueIdx) - 1;
-    let emphTag = "<emphasis level=\"" + style + "\">";
-    let reg = /<emphasis level\=\".*\">/
-
-    let inputVtt = webvtt.parse(inputVttText);
-
-    if (inputVtt.cues[cueIdx].text.search(reg) >= 0) {
-        inputVtt.cues[cueIdx].text = inputVtt.cues[cueIdx].text.replace(inputVtt.cues[cueIdx].text.match(reg)[0], emphTag);
+    cueIdx = parseInt(cueIdx);
+    const inputVtt = webvtt.parse(inputVttText);
+    const emphTag = "<emphasis level=\"" + style + "\">";
+    const match = regExps['style'].exec(inputVtt.cues[cueIdx].text);
+    if (match) {
+        inputVtt.cues[cueIdx].text = inputVtt.cues[cueIdx].text.replace(match[0], emphTag);
     } else {
         inputVtt.cues[cueIdx].text = emphTag + inputVtt.cues[cueIdx].text + "</emphasis>";
     }
@@ -224,8 +228,7 @@ function assignStyleToCue(inputVttText, style, cueIdx){
 }
 
 function getSpeaker(cueText) {
-    const regExp = /<v.*?=.*?(.*?)>/;
-    const match = cueText.match(regExp);
+    const match = regExps['speaker'].exec(cueText);
     return match[1].trim();
 }
 
@@ -234,6 +237,12 @@ function getSpeakers(vttText){
     const speakers = new Map();
     vtt.cues.forEach(cue => speakers.set(getSpeaker(cue.text), true));
     return Array.from(speakers.keys());
+}
+
+// Return the style of a cue
+function getStyle(cueText) {
+  const match = regExps['style'].exec(cueText);
+  return match? match[1] : match;
 }
 
 /**
@@ -250,11 +259,9 @@ function getAsJSON(language, modelsString, vttText){
     let models = JSON.parse(modelsString);
 
     const vtt = webvtt.parse(vttText);
-    let reg = /\<v.*?\=.*?(.*?)\>/;
 
     for (let i = 0; i < vtt.cues.length; i++) {
-        let regMatch = vtt.cues[i].text.match(reg);
-        let speaker = regMatch[1].trim();
+        const speaker = getSpeaker(vtt.cues[i].text);
         if (!output.speakers.hasOwnProperty(speaker)) {
             output.speakers[speaker] = new SpeakerContent(language, getModelForSpeaker(models, speaker), getDefaultStyleForSpeaker(models, speaker));
         }
@@ -272,7 +279,7 @@ function getAsJSON(language, modelsString, vttText){
 
 // Return the text of a cue without tags
 function removeTags(cueText) {
-  return cueText.replace(/<.*?>/g, '');
+  return cueText.replace(regExps['tags'], '');
 }
 
 export default {
@@ -282,6 +289,7 @@ export default {
     assignStyleToCue,
     getSpeaker,
     getSpeakers,
+    getStyle,
     getAsJSON,
     removeTags,
     webvtt

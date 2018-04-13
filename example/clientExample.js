@@ -50,7 +50,7 @@ function assignStyle()
     var cueIdx = document.getElementById("cueIdx").value;
     var inputVtt = document.getElementById("outputSubtitleText").value;
 
-    document.getElementById("outputSubtitleText").value = vttutils.assignStyleToCue(inputVtt, style, cueIdx);
+    document.getElementById("outputSubtitleText").value = vttutils.assignStyleToCue(inputVtt, style, cueIdx-1);
 }
 
 function generateJson()

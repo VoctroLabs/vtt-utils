@@ -2,8 +2,8 @@
 
 const fs = require('fs');
 const chai = require('chai');
+const should = chai.should();
 chai.use(require('chai-arrays'));
-chai.should();
 
 const VTTUtils = require('../lib/vtt-utils').default;
 
@@ -28,5 +28,15 @@ describe('VTTUtils', () => {
     const speaker = VTTUtils.removeTags("<v = Speaker2>I'm Speaker2 and this is the second time I talk,");
     speaker.should.equal("I'm Speaker2 and this is the second time I talk,");
   });
+
+  it('should return style', () => {
+    const style = VTTUtils.getStyle("<v = Speaker2><emphasis level=\"sad\">I'm Speaker2");
+    style.should.equal("sad");
+  });
+
+  it('should return no style', () => {
+    const style = VTTUtils.getStyle("<v = Speaker2>I'm Speaker2");
+    should.not.exist(style);
+  })
 
 });
