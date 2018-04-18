@@ -213,6 +213,13 @@ function checkSubtitlesEquivalency(srcVttText, targetVttText){
     return true;
 }
 
+/**
+ * Assigns a style to the cue in position cueIdx for the VTT-formatted subtitle inputVttText by adding a '<emphasis level="style">' tag to the cue.
+ * @param  {String} inputVttText Input subtitle text, in VTT format
+ * @param  {String} style        Name of the style for the cue (e.g: 'neutral', 'sad', 'aggresive'...)
+ * @param  {Number} cueIdx       Index of the cue where the style must be applied
+ * @return {String}              [description]
+ */
 function assignStyleToCue(inputVttText, style, cueIdx){
     cueIdx = parseInt(cueIdx);
     const inputVtt = webvtt.parse(inputVttText);
@@ -232,6 +239,11 @@ function getSpeaker(cueText) {
     return match[1].trim();
 }
 
+/**
+ * Returns the different speakers present in the VTT formated subtitle vttText, looking at the voice ('<v>') tags in the cues.
+ * @param  {String} vttText Subtitle text, in VTT format
+ * @return {arrays}         Array of speakers
+ */
 function getSpeakers(vttText){
     const vtt = webvtt.parse(vttText);
     const speakers = new Map();
