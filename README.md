@@ -91,10 +91,12 @@ Return the text of a cue without speaker tag
 
 #### removeTags(cueText)
 Return the text of a cue without any tags
+```
 /**
  * @param  {String} cueText Text from a sentence of a subtitle
  * @return {String}              cueText without tags
  */
+ ```
 
 ## Example
 
