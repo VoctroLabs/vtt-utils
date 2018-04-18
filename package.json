@@ -7,7 +7,7 @@
     "build": "babel src --out-dir lib --source-maps",
     "build-example": "browserify example/clientExample.js -o example/bundle.js",
     "prepare": "npm run-script build",
-    "test": "npm run build && mocha -R dot"
+    "test": "mocha --require babel-register"
   },
   "repository": {
     "type": "git",
@@ -24,6 +24,7 @@
     "babel-plugin-transform-modern-regexp": "0.0.4",
     "babel-preset-env": "^1.6.1",
     "babel-preset-stage-0": "^6.24.1",
+    "babel-register": "^6.26.0",
     "browserify": "^16.2.0",
     "chai": "^4.1.2",
     "chai-arrays": "^2.0.0",

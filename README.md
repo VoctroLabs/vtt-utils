@@ -56,7 +56,7 @@ Assigns a style to the cue in position cueIdx for the VTT-formatted subtitle inp
  * @param  {String} inputVttText Input subtitle text, in VTT format
  * @param  {String} style        Name of the style for the cue (e.g: 'neutral', 'sad', 'aggresive'...)
  * @param  {Number} cueIdx       Index of the cue where the style must be applied
- * @return {String}              [description]
+ * @return {String}              inputVttText modified
  */
 ```
 
@@ -64,8 +64,8 @@ Assigns a style to the cue in position cueIdx for the VTT-formatted subtitle inp
 Returns the different speakers present in the VTT formated subtitle vttText, looking at the voice (`<v>`) tags in the cues.
 ```js
 /**
- * @param  {String} vttText Subtitle text, in VTT format
- * @return {arrays}         Array of speakers
+ * @param  {String}     vttText Subtitle text, in VTT format
+ * @return {String[]}           Array of speakers
  */
 ```
 
@@ -73,13 +73,28 @@ Returns the different speakers present in the VTT formated subtitle vttText, loo
 Generates JSON-formatted to generate synthesis with voiceful.
 ```js
 /**
-* @param  {String} language         Language identifier
-* @param  {String} modelsString     Array with speakers-voice models-(optional)defaultStyle correspondence (e.g. '[["speaker1","model1","style1"],["speaker2","model2"]]')
-* @param  {String} vttText          Subtitle text, in VTT format
+* @param  {String}  language        Language identifier
+* @param  {String}  modelsString    Array with speakers-voice models-(optional)defaultStyle correspondence (e.g. '[["speaker1","model1","style1"],["speaker2","model2"]]')
+* @param  {String}  vttText         Subtitle text, in VTT format
 * @return {String}                  JSON-formatted string for synthesis
 */
 ```
 
+#### removeSpeaker(cueText)
+Return the text of a cue without speaker tag
+```js
+/**
+ * @param  {String} cueText Text from a sentence of a subtitle
+ * @return {String}              cueText without the speaker tag
+ */
+```
+
+#### removeTags(cueText)
+Return the text of a cue without any tags
+/**
+ * @param  {String} cueText Text from a sentence of a subtitle
+ * @return {String}              cueText without tags
+ */
 
 ## Example
 

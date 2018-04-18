@@ -35,10 +35,10 @@ function createTextFromCues(cues)
 }
 
 class Sentence {
-    constructor() { //default constructor
-        this.text = "";
-        this.start = 0.0;
-        this.end = 0.0;
+    constructor(text = "", start = 0.0, end = 0.0) {
+        this.text = text;
+        this.start = start;
+        this.end = end;
     }
 }
 
@@ -218,7 +218,7 @@ function checkSubtitlesEquivalency(srcVttText, targetVttText){
  * @param  {String} inputVttText Input subtitle text, in VTT format
  * @param  {String} style        Name of the style for the cue (e.g: 'neutral', 'sad', 'aggresive'...)
  * @param  {Number} cueIdx       Index of the cue where the style must be applied
- * @return {String}              [description]
+ * @return {String}              inputVttText modified
  */
 function assignStyleToCue(inputVttText, style, cueIdx){
     cueIdx = parseInt(cueIdx);
@@ -241,8 +241,8 @@ function getSpeaker(cueText) {
 
 /**
  * Returns the different speakers present in the VTT formated subtitle vttText, looking at the voice ('<v>') tags in the cues.
- * @param  {String} vttText Subtitle text, in VTT format
- * @return {arrays}         Array of speakers
+ * @param  {String}     vttText Subtitle text, in VTT format
+ * @return {String[]}           Array of speakers
  */
 function getSpeakers(vttText){
     const vtt = webvtt.parse(vttText);
@@ -253,43 +253,54 @@ function getSpeakers(vttText){
 
 // Return the style of a cue
 function getStyle(cueText) {
-  const match = regExps['style'].exec(cueText);
-  return match? match[1] : match;
+    const match = regExps['style'].exec(cueText);
+    return match? match[1] : match;
 }
 
 /**
 * Generates JSON-formatted to generate synthesis with voiceful
-* @param  {String} language         Language identifier
-* @param  {String} modelsString     Array with speakers-voice models-(optional)defaultStyle correspondence (e.g. '[["speaker1","model1","style1"],["speaker2","model2"]]')
-* @param  {String} vttText          Subtitle text, in VTT format
+* @param  {String}  language        Language identifier
+* @param  {String}  modelsString    Array with speakers-voice models-(optional)defaultStyle correspondence (e.g. '[["speaker1","model1","style1"],["speaker2","model2"]]')
+* @param  {String}  vttText         Subtitle text, in VTT format
 * @return {String}                  JSON-formatted string for synthesis
 */
 function getAsJSON(language, modelsString, vttText){
     let output = new Object();
     output.speakers = new Object();
 
-    let models = JSON.parse(modelsString);
+    const models = JSON.parse(modelsString);
 
     const vtt = webvtt.parse(vttText);
 
     for (let i = 0; i < vtt.cues.length; i++) {
-        const speaker = getSpeaker(vtt.cues[i].text);
+        const cue = vtt.cues[i];
+        const speaker = getSpeaker(cue.text);
         if (!output.speakers.hasOwnProperty(speaker)) {
-            output.speakers[speaker] = new SpeakerContent(language, getModelForSpeaker(models, speaker), getDefaultStyleForSpeaker(models, speaker));
+            output.speakers[speaker] = new SpeakerContent(
+              language, getModelForSpeaker(models, speaker), getDefaultStyleForSpeaker(models, speaker));
         }
 
-        let sentence = new Sentence();
-        sentence.text = vtt.cues[i].text.replace(regMatch[0], '');
-        sentence.start = vtt.cues[i].start;
-        sentence.end = vtt.cues[i].end;
-
+        const sentence = new Sentence(removeSpeaker(cue.text), cue.start, cue.end);
         output.speakers[speaker].sentences.push(sentence);
     }
 
     return JSON.stringify(output);
 }
 
-// Return the text of a cue without tags
+/**
+ * Return the text of a cue without speaker tag
+ * @param  {String} cueText Text from a sentence of a subtitle
+ * @return {String}              cueText without the speaker tag
+ */
+function removeSpeaker(cueText) {
+    return cueText.replace(regExps['speaker'], '');
+}
+
+/**
+ * Return the text of a cue without any tags
+ * @param  {String} cueText Text from a sentence of a subtitle
+ * @return {String}              cueText without tags
+ */
 function removeTags(cueText) {
   return cueText.replace(regExps['tags'], '');
 }
@@ -303,6 +314,7 @@ export default {
     getSpeakers,
     getStyle,
     getAsJSON,
+    removeSpeaker,
     removeTags,
     webvtt
 }

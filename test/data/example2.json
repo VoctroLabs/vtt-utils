@@ -1,0 +1,21 @@
+{
+  "speakers": {
+    "Speaker1": {
+      "language": "es",
+      "model": "ayesha",
+      "sentences": [{
+        "text": "Empezaremos con el mordiente superior.",
+        "start": 5.00,
+        "end": 8.20
+      }, {
+        "text": "<emphasis level=\"happy\">Que es un adorno que está muy presente en todo el cante flamenco.</emphasis>",
+        "start": 8.20,
+        "end": 12.70
+      }, {
+        "text": "Y también en otras músicas populares y tradicionales.",
+        "start": 12.70,
+        "end": 16.16
+      }]
+    }
+  }
+}
