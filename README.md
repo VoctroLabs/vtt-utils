@@ -91,7 +91,7 @@ Return the text of a cue without speaker tag
 
 #### removeTags(cueText)
 Return the text of a cue without any tags
-```
+```js
 /**
  * @param  {String} cueText Text from a sentence of a subtitle
  * @return {String}              cueText without tags
@@ -102,7 +102,7 @@ Return the text of a cue without any tags
 
 There is an example of usage in `example/index.html`.
 First run the following commands to produce the necessary bundle for the browser:
-```
+```js
 npm install
 npm build-example
 ```
