@@ -5,7 +5,7 @@
   "main": "./lib/vtt-utils.js",
   "scripts": {
     "build": "babel src --out-dir lib --source-maps",
-    "build-example": "browserify example/clientExample.js -o example/bundle.js",
+    "build-example": "npm run-script build && browserify example/clientExample.js -o example/bundle.js",
     "prepare": "npm run-script build",
     "test": "mocha --require babel-register"
   },

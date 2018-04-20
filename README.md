@@ -98,13 +98,29 @@ Return the text of a cue without any tags
  */
  ```
 
-## Example
+## Development
+
+To start developing first clone de repository and install the dependencies with NPM:
+```js
+git clone git@github.com:VoctroLabs/vtt-utils.git
+cd vtt-utils
+npm install
+```
+
+### Example
 
 There is an example of usage in `example/index.html`.
 First run the following commands to produce the necessary bundle for the browser:
-```js
-npm install
+```bash
 npm build-example
+```
+Then open `example/index.html` in your browser.
+
+### Tests
+
+Run tests with:
+```js
+npm test
 ```
 
 ## License
