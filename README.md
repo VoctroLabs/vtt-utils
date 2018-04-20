@@ -112,7 +112,7 @@ npm install
 There is an example of usage in `example/index.html`.
 First run the following commands to produce the necessary bundle for the browser:
 ```bash
-npm build-example
+npm run build-example
 ```
 Then open `example/index.html` in your browser.
 
@@ -120,7 +120,7 @@ Then open `example/index.html` in your browser.
 
 Run tests with:
 ```js
-npm test
+npm run test
 ```
 
 ## License
