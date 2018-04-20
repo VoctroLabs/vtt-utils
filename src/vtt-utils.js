@@ -1,7 +1,7 @@
 import webvtt from '@voctrolabs/node-webvtt';
 
 const regExps = {
-    speaker: /<v.*?=.*?(.*?)>/, // https://www.w3.org/TR/webvtt1/#webvtt-cue-voice-span
+    speaker: /<v.*?(.*?)>/, // https://www.w3.org/TR/webvtt1/#webvtt-cue-voice-span
     style: /<emphasis level="(?<style>.*)">/,
     tags: /<.*?>/g
 };
@@ -114,7 +114,7 @@ function parseToSentences(inputVttText){
         if (cue.text.indexOf('<v') >= 0) {
             currentVoiceTag = cue.text.substring(cue.text.indexOf('<v'), cue.text.indexOf('>') + 1);
         } else { //default
-            currentVoiceTag = '<v = Speaker1>';
+            currentVoiceTag = '<v Speaker1>';
         }
 
         // more than one sentence in fragment

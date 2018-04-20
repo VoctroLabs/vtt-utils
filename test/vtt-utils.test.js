@@ -25,7 +25,7 @@ describe('VTTUtils', () => {
 
   describe('#getSpeaker', () => {
     it('should get speaker name from a single cue', () => {
-      const speaker = VTTUtils.getSpeaker("<v = Speaker2>I'm Speaker2 and this is the second time I talk,");
+      const speaker = VTTUtils.getSpeaker("<v Speaker2>I'm Speaker2 and this is the second time I talk,");
       speaker.should.equal('Speaker2');
     });
   });
@@ -39,26 +39,26 @@ describe('VTTUtils', () => {
 
   describe('#getStyle', () => {
     it('should return style', () => {
-      const style = VTTUtils.getStyle("<v = Speaker2><emphasis level=\"sad\">I'm Speaker2</emphasis>");
+      const style = VTTUtils.getStyle("<v Speaker2><emphasis level=\"sad\">I'm Speaker2</emphasis>");
       style.should.equal("sad");
     });
 
     it('should return no style', () => {
-      const style = VTTUtils.getStyle("<v = Speaker2>I'm Speaker2");
+      const style = VTTUtils.getStyle("<v Speaker2>I'm Speaker2");
       should.not.exist(style);
     })
   });
 
   describe('#removeSpeaker', () => {
     it('should remove speaker tag', () => {
-      const speaker = VTTUtils.removeSpeaker("<v = Speaker2><emphasis level=\"sad\">I'm Speaker2</emphasis>");
+      const speaker = VTTUtils.removeSpeaker("<v Speaker2><emphasis level=\"sad\">I'm Speaker2</emphasis>");
       speaker.should.equal("<emphasis level=\"sad\">I'm Speaker2</emphasis>");
     });
   });
 
   describe('#removeTags', () => {
     it('should remove cue tags', () => {
-      const speaker = VTTUtils.removeTags("<v = Speaker2>I'm Speaker2 and this is the second time I talk,");
+      const speaker = VTTUtils.removeTags("<v Speaker2>I'm Speaker2 and this is the second time I talk,");
       speaker.should.equal("I'm Speaker2 and this is the second time I talk,");
     });
   });
