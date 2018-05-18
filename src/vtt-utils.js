@@ -305,6 +305,45 @@ function removeTags(cueText) {
   return cueText.replace(regExps['tags'], '');
 }
 
+/**
+ * Return noise gate values as string to introduce in VoMix effect
+ * @param  {String} vttText Subtitle text, in VTT format
+ * @param  {Number} transitionTime Transition time, in seconds
+ * @return {String}              Noise gate values as string to introduce in JSON
+ */
+function generateNoiseGateString(vttText, transitionTime)
+{
+    const vtt = webvtt.parse(vttText);
+    let points = [];
+
+    for (var i = 0; i < vtt.cues.length; i++) {
+        // Check if we need to add in points
+        let currentStart = vtt.cues[i].start;
+        let currentEnd = vtt.cues[i].end;
+        let previousEnd = 0.0;
+        if (i > 0) {
+            previousEnd = vtt.cues[i-1].end;
+        }
+        let nextStart = vtt.cues[i].end + transitionTime;
+        if (i < vtt.cues.length - 1) {
+            nextStart = vtt.cues[i+1].start;
+        }
+
+        if (currentStart - transitionTime > previousEnd + transitionTime) {
+            points.push([currentStart-transitionTime, 0.0]);
+            points.push([currentStart, 1.0]);
+        }
+
+        // Check if we need to add out points
+        if (currentEnd + transitionTime < nextStart + transitionTime){
+            points.push([currentEnd, 1.0]);
+            points.push([currentEnd+transitionTime, 0.0]);
+        }
+    }
+
+    return JSON.stringify(points);
+}
+
 export default {
     srtToVtt,
     parseToSentences,
@@ -316,5 +355,6 @@ export default {
     getAsJSON,
     removeSpeaker,
     removeTags,
+    generateNoiseGateString,
     webvtt
 }

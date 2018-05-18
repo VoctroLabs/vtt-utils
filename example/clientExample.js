@@ -79,10 +79,16 @@ function toVTT()
     document.getElementById("inputSubtitleText").value = vttutils.srtToVtt(document.getElementById("inputSubtitleText").value);
 }
 
+function generateNoiseGate()
+{
+    document.getElementById("noiseGate").value = vttutils.generateNoiseGateString(document.getElementById("outputSubtitleText").value, 0.05);
+}
+
 window.onload = function() {
     document.getElementById("fileToLoad").addEventListener("change", loadFileAsText);
     document.getElementById("parseButton").addEventListener("click", parseSubtitle);
     document.getElementById("assignStyleButton").addEventListener("click", assignStyle);
     document.getElementById("generateJsonButton").addEventListener("click", generateJson);
+    document.getElementById("generateNoiseGateButton").addEventListener("click", generateNoiseGate);
     document.getElementById("toVTTButton").addEventListener("click", toVTT);
 };

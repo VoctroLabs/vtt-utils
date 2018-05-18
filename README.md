@@ -98,6 +98,16 @@ Return the text of a cue without any tags
  */
  ```
 
+#### generateNoiseGateString(vttText, transitionTime)
+ Return noise gate values as string to introduce in VoMix effect
+ ```js
+ /**
+  * @param  {String} vttText Subtitle text, in VTT format
+  * @param  {Number} transitionTime Transition time, in seconds
+  * @return {String}              Noise gate values as string to introduce in JSON
+  */
+ ```
+
 ## Development
 
 To start developing first clone de repository and install the dependencies with NPM:
