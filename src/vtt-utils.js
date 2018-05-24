@@ -159,9 +159,9 @@ function parseToSentences(inputVttText){
                     foundPoint = true;
                     let newCue = Object.assign({}, cue);
                     newCue.text = cue.text + nextCue.text.split(". ")[0] + ".";
-                    newCue.end = nextCue.start + (j+1)*(nextCue.end - nextCue.start)/nextCue.text.split(". ").length;
+                    newCue.end = nextCue.start + (nextCue.end - nextCue.start)/nextCue.text.split(". ").length;
                     newCues.push(newCue);
-                    inputVtt.cues[i+cueIdx].text = nextCue.text.substring(nextCue.text.search("\\. "));
+                    inputVtt.cues[i+cueIdx].text = nextCue.text.substring(nextCue.text.search("\\. ") + 2);
                     inputVtt.cues[i+cueIdx].start = newCue.end;
                     // Next fragment contains the rest of the sentence
                 } else if (nextCue.text.slice(-1) == ".") {
