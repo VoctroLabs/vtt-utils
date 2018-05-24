@@ -15,6 +15,14 @@ function data(filename) {
 
 describe('VTTUtils', () => {
 
+  describe('#parseToSentencesFromSRT', () => {
+    it('should return correct VTT', () => {
+      const vtt_i = VTTUtils.srtToVtt(data('example3.srt'));
+      const vtt_o = VTTUtils.parseToSentences(vtt_i).replace(new RegExp(/\r\n/, 'g'), '\n')
+      vtt_o.should.equal(data('example3.vtt'));
+    });
+  });
+
   describe('#getAsJSON', () => {
     it('should return correct JSON', () => {
       const json = VTTUtils.getAsJSON('es', '[["Speaker1","ayesha"]]', data('example2.vtt'));
