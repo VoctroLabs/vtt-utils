@@ -158,7 +158,13 @@ function parseToSentences(inputVttText){
                 if (nextCue.text.search("\\. ") >= 0) {
                     foundPoint = true;
                     let newCue = Object.assign({}, cue);
-                    newCue.text = cue.text + nextCue.text.split(". ")[0] + ".";
+                    if (cue.text.indexOf('<v') >= 0) {
+                        currentVoiceTag = cue.text.substring(cue.text.indexOf('<v'), cue.text.indexOf('>') + 1);
+                        newCue.text = cue.text + nextCue.text.split(". ")[0] + ".";
+                    } else {
+                        newCue.text = currentVoiceTag + cue.text + nextCue.text.split(". ")[0] + ".";
+                    }
+
                     newCue.end = nextCue.start + (nextCue.end - nextCue.start)/nextCue.text.split(". ").length;
                     newCues.push(newCue);
                     inputVtt.cues[i+cueIdx].text = nextCue.text.substring(nextCue.text.search("\\. ") + 2);
