@@ -341,7 +341,7 @@ function generateNoiseGateString(vttText, transitionTime)
         }
 
         // Check if we need to add out points
-        if (currentEnd + transitionTime < nextStart + transitionTime){
+        if (currentEnd + transitionTime < nextStart - transitionTime){
             points.push([currentEnd, 0.0]);
             points.push([currentEnd+transitionTime, 1.0]);
         }
