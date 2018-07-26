@@ -6,6 +6,9 @@ const regExps = {
     tags: /<.*?>/g
 };
 
+class FormatError extends Error {}
+class CompatibilityError extends Error {}
+
 function formatTime(duration) {
     let seconds = parseInt((duration)%60)
     , minutes = parseInt((duration/(60))%60)
@@ -100,7 +103,12 @@ function srtToVtt(inputSrtText){
 * @return {String}              Output subtitle text, in VTT format
 */
 function parseToSentences(inputVttText){
-    const inputVtt = webvtt.parse(inputVttText);
+    var inputVtt;
+    try {
+        inputVtt = webvtt.parse(inputVttText);
+    } catch (e) {
+        throw new FormatError(e.message)
+    }
 
     let newCues = [];
 
@@ -203,16 +211,27 @@ function parseToSentences(inputVttText){
 * @return {Boolean}              True if both are equivalent, false otherwise
 */
 function checkSubtitlesEquivalency(srcVttText, targetVttText){
-    const srcVtt = webvtt.parse(srcVttText);
-    const targetVtt = webvtt.parse(targetVttText);
+    var srcVtt;
+    try {
+        srcVtt = webvtt.parse(srcVttText);
+    } catch (e) {
+        throw new FormatError('Error in src subtitle: ' + e.mesage)
+    }
+
+    var targetVtt;
+    try {
+        targetVtt = webvtt.parse(targetVttText);
+    } catch (e) {
+        throw new FormatError('Error in target subtitle: ' + e.mesage)
+    }
 
     if (srcVtt.cues.length != targetVtt.cues.length) {
-        return false;
+        throw new CompatibilityError('Subtitles have different number of cues (' + srcVtt.cues.length.toString() + ' and ' + targetVtt.cues.length + ')')
     }
 
     for (let i = 0; i < srcVtt.cues.length; i++) {
         if (srcVtt.cues[i].start != targetVtt.cues[i].start || srcVtt.cues[i].end != targetVtt.cues[i].end){
-            return false;
+            throw new CompatibilityError('Start and end times differ at cue ' + (i+1).toString())
         }
     }
 

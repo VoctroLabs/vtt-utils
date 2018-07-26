@@ -1,0 +1,79 @@
+1
+00:00:15,500 --> 00:00:18,500
+This episode, I should shoot outdoors,
+
+2
+00:00:18,500 --> 00:00:19,500
+but there is too much brothel outside,
+
+3
+00:00:19,500 --> 00:00:21,500
+with wind, planes and lawn mowers.
+
+4
+00:00:21,500 --> 00:00:23,400
+So, we are indoors.
+
+5
+00:00:23,400 --> 00:00:27,000
+All living things, and it's obvious, do not breathe in the same way.
+
+6
+00:00:27,000 --> 00:00:30,500
+A fish underwater cannot breath like a bird in the sky.
+
+7
+00:00:30,500 --> 00:00:34,500
+In any case, the logic of this process is similar.
+
+8
+00:00:34,500 --> 00:00:37,500
+Whether you have lungs, or grills in the case of a fish,
+
+9
+00:00:37,500 --> 00:00:40,500
+or also the leaves in plants,
+
+10
+00:00:40,500 --> 00:00:45,500
+breathing, consists in bringing oxygen into the body's cells,
+
+11
+00:00:45,500 --> 00:00:47,150
+to produce energy.
+
+12
+00:00:47,150 --> 00:00:51,000
+This is not a big surprise, but we are gonna focus on the human body.
+
+13
+00:00:52,500 --> 00:00:57,500
+Although we can still note that for the insects the system is much simpler.
+
+14
+00:00:57,500 --> 00:01:01,500
+This is not surprising if we are interested on insects in robotics,
+
+15
+00:01:01,500 --> 00:01:05,500
+it's because these are organisms that are, easy to understand.
+
+16
+00:01:05,800 --> 00:01:09,250
+Insects have no lungs, grills, or leaves.
+
+17
+00:01:09,250 --> 00:01:13,500
+Insects, in fact, have open pipes that go through their body.
+
+18
+00:01:13,500 --> 00:01:16,000
+Internal airstreams, if you want,
+
+19
+00:01:16,000 --> 00:01:21,000
+and in fact, when the air go through these pipes, it is in direct contact with the cells,
+
+20
+00:01:21,000 --> 00:01:25,000
+and therefore the oxygen is brought directly to the cell.

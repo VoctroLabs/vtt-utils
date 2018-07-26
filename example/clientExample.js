@@ -19,7 +19,11 @@ function parseSubtitle()
 {
     var inputVttText = document.getElementById("inputSubtitleText").value;
 
-    document.getElementById("outputSubtitleText").value = vttutils.parseToSentences(inputVttText);
+    try {
+        document.getElementById("outputSubtitleText").value = vttutils.parseToSentences(inputVttText);
+    } catch (e) {
+        document.getElementById("outputSubtitleText").value = e.message;
+    }
 
     var speakers = vttutils.getSpeakers(document.getElementById("outputSubtitleText").value);
 

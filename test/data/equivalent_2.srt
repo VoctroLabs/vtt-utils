@@ -1,0 +1,79 @@
+1
+00:00:15,500 --> 00:00:18,500
+Cet épisode, je l'aurai bien tourné en extérieur,
+
+2
+00:00:18,500 --> 00:00:19,500
+mais il y a trop de bordel dehors,
+
+3
+00:00:19,500 --> 00:00:21,500
+entre le vent, les avions et les tondeuses à gazon.
+
+4
+00:00:21,500 --> 00:00:23,400
+Donc du coup, on est en intérieur.
+
+5
+00:00:23,400 --> 00:00:27,000
+Tous les êtres vivants, c'est une évidence, ne respirent pas de la même manière.
+
+6
+00:00:27,000 --> 00:00:30,500
+Un poisson sous l'eau ne peut pas respirer comme un oiseau en plein ciel.
+
+7
+00:00:30,500 --> 00:00:34,500
+Cependant, la logique de ce qui se produit est bel et bien similaire.
+
+8
+00:00:34,500 --> 00:00:37,500
+Qu'on ait des poumons, ou bien des branchies quand on est un poisson,
+
+9
+00:00:37,500 --> 00:00:40,500
+ou même des feuilles quand on est une plante,
+
+10
+00:00:40,500 --> 00:00:45,500
+la respiration, c'est bien l'idée d'amener de l'oxygène dans les cellules du corps,
+
+11
+00:00:45,500 --> 00:00:47,150
+pour produire de l'énergie.
+
+12
+00:00:47,150 --> 00:00:51,000
+Bon ça ne va pas être une grande surprise, mais on va surtout s'intéresser au corps humain.
+
+13
+00:00:52,500 --> 00:00:57,500
+Même si on peut quand même noter que pour les insectes le système est beaucoup plus simple.
+
+14
+00:00:57,500 --> 00:01:01,500
+Ce n'est pas étonnant si on s'intéresse beaucoup aux insectes en matière de robotique,
+
+15
+00:01:01,500 --> 00:01:05,500
+c'est parce que ce sont des organismes qui sont, faciles à comprendre.
+
+16
+00:01:05,800 --> 00:01:09,250
+Les insectes n'ont ni poumon, ni branchie, ni feuille.
+
+17
+00:01:09,250 --> 00:01:13,500
+les insectes, en fait, ils ont des tuyaux ouverts qui leur traversent le corps.
+
+18
+00:01:13,500 --> 00:01:16,000
+Des courants d'air intérieur, si vous voulez,
+
+19
+00:01:16,000 --> 00:01:21,000
+et en fait, quand l'air passe dans ces tuyaux, il est en contact direct avec les cellules,
+
+20
+00:01:21,000 --> 00:01:25,000
+et donc l'oxygène peut être apporté directement à la cellule.
