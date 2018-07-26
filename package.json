@@ -1,6 +1,6 @@
 {
   "name": "@voctrolabs/vtt-utils",
-  "version": "0.6.4",
+  "version": "0.7.0",
   "description": "Utils for handling VTT subtitles",
   "main": "./lib/vtt-utils.js",
   "scripts": {
