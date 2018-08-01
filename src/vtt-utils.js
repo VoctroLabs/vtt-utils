@@ -215,14 +215,14 @@ function checkSubtitlesEquivalency(srcVttText, targetVttText){
     try {
         srcVtt = webvtt.parse(srcVttText);
     } catch (e) {
-        throw new FormatError('Error in src subtitle: ' + e.mesage)
+        throw new FormatError('Error in src subtitle: ' + e.message)
     }
 
     var targetVtt;
     try {
         targetVtt = webvtt.parse(targetVttText);
     } catch (e) {
-        throw new FormatError('Error in target subtitle: ' + e.mesage)
+        throw new FormatError('Error in target subtitle: ' + e.message)
     }
 
     if (srcVtt.cues.length != targetVtt.cues.length) {
