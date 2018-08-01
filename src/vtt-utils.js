@@ -103,7 +103,7 @@ function srtToVtt(inputSrtText){
 * @return {String}              Output subtitle text, in VTT format
 */
 function parseToSentences(inputVttText){
-    var inputVtt;
+    let inputVtt;
     try {
         inputVtt = webvtt.parse(inputVttText);
     } catch (e) {
@@ -370,16 +370,18 @@ function generateNoiseGateString(vttText, transitionTime)
 }
 
 export default {
-    srtToVtt,
-    parseToSentences,
-    checkSubtitlesEquivalency,
+    CompatibilityError,
+    FormatError,
     assignStyleToCue,
+    checkSubtitlesEquivalency,
+    generateNoiseGateString,
     getSpeaker,
     getSpeakers,
     getStyle,
     getAsJSON,
+    parseToSentences,
     removeSpeaker,
     removeTags,
-    generateNoiseGateString,
+    srtToVtt,
     webvtt
 }

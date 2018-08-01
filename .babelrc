@@ -4,6 +4,9 @@
     "stage-0"
   ],
   "plugins": [
-    "transform-modern-regexp"
+    "transform-modern-regexp",
+    ["babel-plugin-transform-builtin-extend", {
+      globals: ["Error", "Array"]
+    }]
   ]
 }

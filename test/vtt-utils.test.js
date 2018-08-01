@@ -29,7 +29,7 @@ describe('VTTUtils', () => {
                 const vtt_i = data('example_wrongformat1.vtt');
                 VTTUtils.parseToSentences(vtt_i).replace(new RegExp(/\r\n/, 'g'), '\n');
             })
-            .should.throw(VTTUtils.ParserError);
+            .should.throw(VTTUtils.FormatError);
         });
     });
 
