@@ -288,7 +288,7 @@ function getStyle(cueText) {
 * @param  {String}      language            Language identifier
 * @param  {String}      modelsString        Array with speakers-voice models-(optional)defaultStyle correspondence (e.g. '[["speaker1","model1","style1"],["speaker2","model2"]]')
 * @param  {String}      vttText             Subtitle text, in VTT format
-* @param  {Number[]}    selectedSentences   Array with indexes of sentences to be synthesized
+* @param  {Number[]}    selectedSentences   Array with indexes of sentences to be synthesized (if none given, all are synthesized)
 * @return {String}                          JSON-formatted string for synthesis
 */
 function getAsJSON(language, modelsString, vttText, selectedSentences = []){
