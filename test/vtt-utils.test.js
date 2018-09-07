@@ -101,6 +101,14 @@ describe('VTTUtils', () => {
         });
     });
 
+    describe('#getAsJSON_onlyOdds', () => {
+        it('should return correct JSON with synthesize flag as true only in odd sentences', () => {
+            const json = VTTUtils.getAsJSON('es', '[["Speaker1","ayesha"]]', data('example2.vtt'), [1,3]);
+            const normalize = json => JSON.stringify(JSON.parse(json));
+            normalize(data('example2_onlyodd.json')).should.equal(normalize(json));
+        });
+    });
+
     describe('#getSpeaker', () => {
         it('should get speaker name from a single cue', () => {
             const speaker = VTTUtils.getSpeaker("<v Speaker2>I'm Speaker2 and this is the second time I talk,");

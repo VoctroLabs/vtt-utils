@@ -11,7 +11,7 @@
                     "end": 8.2
                 },
                 {
-                    "synthesize": true,
+                    "synthesize": false,
                     "text": "<emphasis level=\"happy\">Que es un adorno que está muy presente en todo el cante flamenco.</emphasis>",
                     "start": 8.2,
                     "end": 12.7

@@ -38,7 +38,8 @@ function createTextFromCues(cues)
 }
 
 class Sentence {
-    constructor(text = "", start = 0.0, end = 0.0) {
+    constructor(text = "", start = 0.0, end = 0.0, synthFlag = true) {
+        this.synthesize = synthFlag;
         this.text = text;
         this.start = start;
         this.end = end;
@@ -284,12 +285,13 @@ function getStyle(cueText) {
 
 /**
 * Generates JSON-formatted to generate synthesis with voiceful
-* @param  {String}  language        Language identifier
-* @param  {String}  modelsString    Array with speakers-voice models-(optional)defaultStyle correspondence (e.g. '[["speaker1","model1","style1"],["speaker2","model2"]]')
-* @param  {String}  vttText         Subtitle text, in VTT format
-* @return {String}                  JSON-formatted string for synthesis
+* @param  {String}      language            Language identifier
+* @param  {String}      modelsString        Array with speakers-voice models-(optional)defaultStyle correspondence (e.g. '[["speaker1","model1","style1"],["speaker2","model2"]]')
+* @param  {String}      vttText             Subtitle text, in VTT format
+* @param  {Number[]}    selectedSentences   Array with indexes of sentences to be synthesized
+* @return {String}                          JSON-formatted string for synthesis
 */
-function getAsJSON(language, modelsString, vttText){
+function getAsJSON(language, modelsString, vttText, selectedSentences = []){
     let output = new Object();
     output.speakers = new Object();
 
@@ -305,7 +307,12 @@ function getAsJSON(language, modelsString, vttText){
               language, getModelForSpeaker(models, speaker), getDefaultStyleForSpeaker(models, speaker));
         }
 
-        const sentence = new Sentence(removeSpeaker(cue.text), cue.start, cue.end);
+        var synthFlag = false;
+        if (selectedSentences.includes(i+1) || selectedSentences.length == 0) {
+            synthFlag = true;
+        }
+
+        const sentence = new Sentence(removeSpeaker(cue.text), cue.start, cue.end, synthFlag);
         output.speakers[speaker].sentences.push(sentence);
     }
 
