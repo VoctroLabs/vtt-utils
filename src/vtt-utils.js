@@ -85,6 +85,7 @@ function getDefaultStyleForSpeaker(models, speaker) {
  * @return {String}              Output subtitle text, in VTT format
  */
 function srtToVtt(inputSrtText){
+    inputSrtText = inputSrtText.replace(/[\u200B-\u200D\uFEFF]/g, ''); //removes zero-width chars
     // Change commas in text
     let reg = /[0-9](,)[0-9]/g;
     let commasMatches = inputSrtText.match(reg);
@@ -104,11 +105,12 @@ function srtToVtt(inputSrtText){
 * @return {String}              Output subtitle text, in VTT format
 */
 function parseToSentences(inputVttText){
+    inputVttText = inputVttText.replace(/[\u200B-\u200D\uFEFF]/g, ''); //removes zero-width chars
     let inputVtt;
     try {
         inputVtt = webvtt.parse(inputVttText);
     } catch (e) {
-        throw new FormatError(e.message)
+        throw new FormatError(e.message);
     }
 
     let newCues = [];
@@ -212,6 +214,9 @@ function parseToSentences(inputVttText){
 * @return {Boolean}              True if both are equivalent, false otherwise
 */
 function checkSubtitlesEquivalency(srcVttText, targetVttText){
+    srcVttText = srcVttText.replace(/[\u200B-\u200D\uFEFF]/g, ''); //removes zero-width chars
+    targetVttText = targetVttText.replace(/[\u200B-\u200D\uFEFF]/g, ''); //removes zero-width chars
+
     var srcVtt;
     try {
         srcVtt = webvtt.parse(srcVttText);
@@ -247,6 +252,8 @@ function checkSubtitlesEquivalency(srcVttText, targetVttText){
  * @return {String}              inputVttText modified
  */
 function assignStyleToCue(inputVttText, style, cueIdx){
+    inputVttText = inputVttText.replace(/[\u200B-\u200D\uFEFF]/g, ''); //removes zero-width chars
+
     cueIdx = parseInt(cueIdx);
     const inputVtt = webvtt.parse(inputVttText);
     const emphTag = "<emphasis level=\"" + style + "\">";
@@ -271,6 +278,7 @@ function getSpeaker(cueText) {
  * @return {String[]}           Array of speakers
  */
 function getSpeakers(vttText){
+    vttText = vttText.replace(/[\u200B-\u200D\uFEFF]/g, ''); //removes zero-width chars
     const vtt = webvtt.parse(vttText);
     const speakers = new Map();
     vtt.cues.forEach(cue => speakers.set(getSpeaker(cue.text), true));
@@ -292,6 +300,8 @@ function getStyle(cueText) {
 * @return {String}                          JSON-formatted string for synthesis
 */
 function getAsJSON(language, modelsString, vttText, selectedSentences = []){
+    vttText = vttText.replace(/[\u200B-\u200D\uFEFF]/g, ''); //removes zero-width chars
+
     let output = new Object();
     output.speakers = new Object();
 
@@ -345,6 +355,8 @@ function removeTags(cueText) {
  */
 function generateNoiseGateString(vttText, transitionTime)
 {
+    vttText = vttText.replace(/[\u200B-\u200D\uFEFF]/g, ''); //removes zero-width chars
+
     const vtt = webvtt.parse(vttText);
     let points = [];
 
