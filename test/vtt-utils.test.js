@@ -101,6 +101,15 @@ describe('VTTUtils', () => {
         });
     });
 
+    describe('#getAsJSON with comma timestamps', () => {
+        it('should return correct JSON', () => {
+            const vtt_o = VTTUtils.parseToSentences(data('example4.vtt')).replace(new RegExp(/\r\n/, 'g'), '\n');
+            const json = VTTUtils.getAsJSON('en', '[["Speaker1","daniel"]]', vtt_o);
+            const normalize = json => JSON.stringify(JSON.parse(json));
+            normalize(data('example4.json')).should.equal(normalize(json));
+        });
+    });
+
     describe('#getAsJSON_onlyOdds', () => {
         it('should return correct JSON with synthesize flag as true only in odd sentences', () => {
             const json = VTTUtils.getAsJSON('es', '[["Speaker1","ayesha"]]', data('example2.vtt'), [1,3]);
