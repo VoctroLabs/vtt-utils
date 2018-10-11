@@ -248,20 +248,30 @@ function checkSubtitlesEquivalency(srcVttText, targetVttText){
  * Assigns a style to the cue in position cueIdx for the VTT-formatted subtitle inputVttText by adding a '<emphasis level="style">' tag to the cue.
  * @param  {String} inputVttText Input subtitle text, in VTT format
  * @param  {String} style        Name of the style for the cue (e.g: 'neutral', 'sad', 'aggresive'...)
- * @param  {Number} cueIdx       Index of the cue where the style must be applied
+ * @param  {Number} cueIdx       Index of the cue where the style must be applied (first cue = index 0)
  * @return {String}              inputVttText modified
  */
 function assignStyleToCue(inputVttText, style, cueIdx){
     inputVttText = inputVttText.replace(/[\u200B-\u200D\uFEFF]/g, ''); //removes zero-width chars
-
+    style = "voiceful:" + style;
     cueIdx = parseInt(cueIdx);
     const inputVtt = webvtt.parse(inputVttText);
     const emphTag = "<emphasis level=\"" + style + "\">";
     const match = regExps['style'].exec(inputVtt.cues[cueIdx].text);
+    const speakerTagMatch = regExps['speaker'].exec(inputVtt.cues[cueIdx].text);
+
+    if (speakerTagMatch) {
+        inputVtt.cues[cueIdx].text = inputVtt.cues[cueIdx].text.replace(speakerTagMatch[0], '');
+    }
+
     if (match) {
         inputVtt.cues[cueIdx].text = inputVtt.cues[cueIdx].text.replace(match[0], emphTag);
     } else {
         inputVtt.cues[cueIdx].text = emphTag + inputVtt.cues[cueIdx].text + "</emphasis>";
+    }
+
+    if (speakerTagMatch) {
+        inputVtt.cues[cueIdx].text = speakerTagMatch[0] + inputVtt.cues[cueIdx].text;
     }
 
     return createTextFromCues(inputVtt.cues);
