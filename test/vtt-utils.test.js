@@ -133,10 +133,19 @@ describe('VTTUtils', () => {
     });
 
     describe('#assignStyleToCue', () => {
-        it('should assign "angry" emphasis style to cue 3', () => {
+        it('should assign "voiceful:angry" emphasis style to cue 3', () => {
             const vtt_i = data('example3.vtt');
-            const vtt_o = VTTUtils.assignStyleToCue(vtt_i, "angry", 2).replace(new RegExp(/\r\n/, 'g'), '\n');
+            const vtt_o = VTTUtils.addTagToCue(vtt_i, 2, "emphasis", "level", "voiceful:angry", 2).replace(new RegExp(/\r\n/, 'g'), '\n');
+            //const vtt_o = VTTUtils.assignStyleToCue(vtt_i, "angry", 2).replace(new RegExp(/\r\n/, 'g'), '\n');
             vtt_o.trim().should.equal(data('example3_cue3angry.vtt').trim());
+        });
+    });
+
+    describe('#assignProsodyRangeTocue', () => {
+        it('should assign "non-adapt" rate attribute to prosody to cue 3', () => {
+            const vtt_i = data('example3.vtt');
+            const vtt_o = VTTUtils.addTagToCue(vtt_i, 2, "prosody", "range", "voiceful:non-adapt", 2).replace(new RegExp(/\r\n/, 'g'), '\n');
+            vtt_o.trim().should.equal(data('example3_cue3norangeadapt.vtt').trim());
         });
     });
 

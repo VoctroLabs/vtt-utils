@@ -245,7 +245,47 @@ function checkSubtitlesEquivalency(srcVttText, targetVttText){
 }
 
 /**
+ * Adds a tag with an attribute an its value to the cue in position cueIdx for the VTT-formatted subtitle inputVttText surrounding the text by '<tag attribute="value">' and </tag>.
+ * @param  {String} inputVttText Input subtitle text, in VTT format
+ * @param  {Number} cueIdx       Index of the cue where the style must be applied (first cue = index 0)
+ * @param  {String} tag          Name of the tag
+ * @param  {String} attribute    Name of the attribute
+ * @param  {String} value        Value for the attribute
+ * @return {String}              inputVttText modified
+ */
+function addTagToCue(inputVttText, cueIdx, tag, attributeName, attributeValue){
+    inputVttText = inputVttText.replace(/[\u200B-\u200D\uFEFF]/g, ''); //removes zero-width chars
+    cueIdx = parseInt(cueIdx);
+    const inputVtt = webvtt.parse(inputVttText);
+    const tagOpeningText = "<" + tag + " " + attributeName + "=\"" + attributeValue + "\">";
+    const tagClosingText = "</" + tag + ">";
+
+    // Check if there is a speaker tag, to remove it from the text and add it again at the end
+    const speakerTagMatch = regExps['speaker'].exec(inputVtt.cues[cueIdx].text);
+
+    if (speakerTagMatch) {
+        inputVtt.cues[cueIdx].text = inputVtt.cues[cueIdx].text.replace(speakerTagMatch[0], '');
+    }
+
+    const tagRegExp = new RegExp('<' + tag + ' ' + attributeName + '="(?<value>.*)">');
+    const match = tagRegExp.exec(inputVtt.cues[cueIdx].text);
+
+    if (match) { // if the tag was already there, just replace the attributeValue
+        inputVtt.cues[cueIdx].text = inputVtt.cues[cueIdx].text.replace(match[1], attributeValue);
+    } else { // otherwise, add it
+        inputVtt.cues[cueIdx].text = tagOpeningText + inputVtt.cues[cueIdx].text + tagClosingText;
+    }
+
+    if (speakerTagMatch) {
+        inputVtt.cues[cueIdx].text = speakerTagMatch[0] + inputVtt.cues[cueIdx].text;
+    }
+
+    return createTextFromCues(inputVtt.cues);
+}
+
+/**
  * Assigns a style to the cue in position cueIdx for the VTT-formatted subtitle inputVttText by adding a '<emphasis level="style">' tag to the cue.
+ * @deprecated since version 0.10
  * @param  {String} inputVttText Input subtitle text, in VTT format
  * @param  {String} style        Name of the style for the cue (e.g: 'neutral', 'sad', 'aggresive'...)
  * @param  {Number} cueIdx       Index of the cue where the style must be applied (first cue = index 0)
@@ -402,6 +442,7 @@ export default {
     CompatibilityError,
     FormatError,
     assignStyleToCue,
+    addTagToCue,
     checkSubtitlesEquivalency,
     generateNoiseGateString,
     getSpeaker,
