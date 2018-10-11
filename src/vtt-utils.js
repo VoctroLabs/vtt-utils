@@ -13,7 +13,7 @@ function formatTime(duration) {
     let seconds = parseInt((duration)%60)
     , minutes = parseInt((duration/(60))%60)
     , hours = parseInt((duration/(60*60))%24)
-    , milliseconds = parseInt(((duration)%60 - seconds) * 1000);
+    , milliseconds = parseInt(((duration)%60 - seconds).toFixed(3) * 1000);
 
     hours = (hours < 10) ? "0" + hours : hours;
     minutes = (minutes < 10) ? "0" + minutes : minutes;
@@ -245,6 +245,58 @@ function checkSubtitlesEquivalency(srcVttText, targetVttText){
 }
 
 /**
+ * Updates the start and end times of the cue indicated by cueIdx
+ * @param  {String} inputVttText Input subtitle text, in VTT format
+ * @param  {Number} cueIdx       Index of the cue where the style must be applied (first cue = index 0)
+ * @param  {Number} startTime    New start time, in seconds
+ * @param  {Number} endTime      New end time, in seconds
+ * @return {String}              inputVttText modified
+ */
+function updateCueTimes(inputVttText, cueIdx, startTime, endTime){
+    inputVttText = inputVttText.replace(/[\u200B-\u200D\uFEFF]/g, ''); //removes zero-width chars
+    cueIdx = parseInt(cueIdx);
+    const inputVtt = webvtt.parse(inputVttText);
+    inputVtt.cues[cueIdx].text = startTime;
+    inputVtt.cues[cueIdx].end = endTime;
+
+    return createTextFromCues(inputVtt.cues);
+}
+
+/**
+ * Updates the start and end times of the cue indicated by cueIdx
+ * @param  {String} inputVttText Input subtitle text, in VTT format
+ * @param  {Number} cueIdx       Index of the cue where the style must be applied (first cue = index 0)
+ * @param  {String} newText      New text for the cue
+ * @return {String}              inputVttText modified
+ */
+function updateCueText(inputVttText, cueIdx, newText){
+    inputVttText = inputVttText.replace(/[\u200B-\u200D\uFEFF]/g, ''); //removes zero-width chars
+    cueIdx = parseInt(cueIdx);
+    const inputVtt = webvtt.parse(inputVttText);
+
+    // Check if there is a speaker tag, to keep it.
+    const speakerTagMatch = regExps['speaker'].exec(inputVtt.cues[cueIdx].text);
+
+    if (speakerTagMatch) {
+        inputVtt.cues[cueIdx].text = speakerTagMatch[0] + newText;
+    } else {
+        inputVtt.cues[cueIdx].text = newText;
+    }
+
+    return createTextFromCues(inputVtt.cues);
+}
+
+function updateCueTimes(inputVttText, cueIdx, startTime, endTime){
+    inputVttText = inputVttText.replace(/[\u200B-\u200D\uFEFF]/g, ''); //removes zero-width chars
+    cueIdx = parseInt(cueIdx);
+    const inputVtt = webvtt.parse(inputVttText);
+    inputVtt.cues[cueIdx].start = startTime;
+    inputVtt.cues[cueIdx].end = endTime;
+
+    return createTextFromCues(inputVtt.cues);
+}
+
+/**
  * Adds a tag with an attribute an its value to the cue in position cueIdx for the VTT-formatted subtitle inputVttText surrounding the text by '<tag attribute="value">' and </tag>.
  * @param  {String} inputVttText Input subtitle text, in VTT format
  * @param  {Number} cueIdx       Index of the cue where the style must be applied (first cue = index 0)
@@ -443,6 +495,8 @@ export default {
     FormatError,
     assignStyleToCue,
     addTagToCue,
+    updateCueTimes,
+    updateCueText,
     checkSubtitlesEquivalency,
     generateNoiseGateString,
     getSpeaker,

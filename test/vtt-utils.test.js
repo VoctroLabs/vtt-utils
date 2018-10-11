@@ -149,6 +149,22 @@ describe('VTTUtils', () => {
         });
     });
 
+    describe('#changeTimes', () => {
+        it('should update the start and end times of cue 3', () => {
+            const vtt_i = data('example3.vtt');
+            const vtt_o = VTTUtils.updateCueTimes(vtt_i, 2, 21.700, 23.450).replace(new RegExp(/\r\n/, 'g'), '\n');
+            vtt_o.trim().should.equal(data('example3_cue3newtimes.vtt').trim());
+        });
+    });
+
+    describe('#changeText', () => {
+        it('should update the text of cue 3', () => {
+            const vtt_i = data('example3.vtt');
+            const vtt_o = VTTUtils.updateCueText(vtt_i, 2, 'This is the new text.').replace(new RegExp(/\r\n/, 'g'), '\n');
+            vtt_o.trim().should.equal(data('example3_cue3newtext.vtt').trim());
+        });
+    });
+
     describe('#getStyle', () => {
         it('should return style', () => {
             const style = VTTUtils.getStyle("<v Speaker2><emphasis level=\"sad\">I'm Speaker2</emphasis>");
