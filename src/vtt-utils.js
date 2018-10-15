@@ -129,8 +129,9 @@ function parseToSentences(inputVttText){
         }
 
         // more than one sentence in fragment
-        let separators = ["\\\. ", "\\\? ", "\\\! "];
+        const separators = ["\\\. ", "\\\? ", "\\\! "];
         let reg = new RegExp(separators.join('|'), 'g');
+        const endChars = ['.', '!', '?'];
         if (cue.text.indexOf(". ") >= 0 || cue.text.indexOf("? ") >= 0 || cue.text.indexOf("! ") >= 0) {
             let sentences = cue.text.split(reg);
             let tokens = cue.text.match(reg);
@@ -148,7 +149,7 @@ function parseToSentences(inputVttText){
 
                 newCue.text = newCue.text.trim();
 
-                if (['.', '?', '!'].indexOf(newCue.text.slice(-1)) == -1){
+                if (endChars.indexOf(newCue.text.slice(-1)) == -1){
                     newCue.text += ".";
                 }
 
@@ -157,32 +158,33 @@ function parseToSentences(inputVttText){
                 newCues.push(newCue);
             }
         }
-
         // Fragment does not contain a complete sentence
-        else if (cue.text.slice(-1) != ".") {
-            let foundPoint = false;
+        else if (endChars.indexOf(cue.text.slice(-1)) == -1) {
+            let foundEndChar = false;
             let cueIdx = 1;
-            while (!foundPoint) {
+            while (!foundEndChar) {
                 let nextCue = inputVtt.cues[i+cueIdx];
                 nextCue.text = nextCue.text.replace(/<\/v>/g, '').trim();
                 // Next fragment has several sentences. We take the end of 1st and continue
-                if (nextCue.text.search("\\. ") >= 0) {
-                    foundPoint = true;
+                if (nextCue.text.match(reg)) {
+                    foundEndChar = true;
+                    let foundSeparator = nextCue.text.match(reg)[0];
+
                     let newCue = Object.assign({}, cue);
                     if (cue.text.indexOf('<v') >= 0) {
                         currentVoiceTag = cue.text.substring(cue.text.indexOf('<v'), cue.text.indexOf('>') + 1);
-                        newCue.text = cue.text + nextCue.text.split(". ")[0] + ".";
+                        newCue.text = cue.text + nextCue.text.split(foundSeparator)[0] + foundSeparator[0];
                     } else {
-                        newCue.text = currentVoiceTag + cue.text + nextCue.text.split(". ")[0] + ".";
+                        newCue.text = currentVoiceTag + cue.text + nextCue.text.split(foundSeparator)[0] + foundSeparator[0];
                     }
 
-                    newCue.end = nextCue.start + (nextCue.end - nextCue.start)/nextCue.text.split(". ").length;
+                    newCue.end = nextCue.start + (nextCue.end - nextCue.start)/nextCue.text.split(foundSeparator).length;
                     newCues.push(newCue);
-                    inputVtt.cues[i+cueIdx].text = nextCue.text.substring(nextCue.text.search("\\. ") + 2);
+                    inputVtt.cues[i+cueIdx].text = nextCue.text.substring(nextCue.text.search("\\" + foundSeparator) + 2);
                     inputVtt.cues[i+cueIdx].start = newCue.end;
                     // Next fragment contains the rest of the sentence
-                } else if (nextCue.text.slice(-1) == ".") {
-                    foundPoint = true;
+                } else if (endChars.indexOf(nextCue.text.slice(-1)) > -1) {
+                    foundEndChar = true;
                     let newCue = Object.assign({}, cue);
                     newCue.text += " " + nextCue.text.replace(currentVoiceTag, '');
                     newCue.end = nextCue.end;

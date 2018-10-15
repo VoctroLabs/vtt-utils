@@ -1,0 +1,19 @@
+1
+00:00:00,000 --> 00:00:07,000
+Este es un subtítulo
+
+2
+00:00:15,539 --> 00:00:18,849
+con algunas particularidades.
+
+3
+00:00:20,399 --> 00:00:23,248
+¿Cuáles son?
+
+4
+00:00:23,248 --> 00:00:25,949
+¿Tiene frases con interrogaciones? Sí.
+
+5
+00:00:26,609 --> 00:00:28,080
+Y deben separarse.

@@ -21,6 +21,12 @@ describe('VTTUtils', () => {
             const vtt_o = VTTUtils.parseToSentences(vtt_i).replace(new RegExp(/\r\n/, 'g'), '\n');
             vtt_o.should.equal(data('example3.vtt'));
         });
+
+        it('should return correct VTT, case with question marks', () => {
+            const vtt_i = VTTUtils.srtToVtt(data('example5.srt'));
+            const vtt_o = VTTUtils.parseToSentences(vtt_i).replace(new RegExp(/\r\n/, 'g'), '\n');
+            vtt_o.should.equal(data('example5.vtt'));
+        });
     });
 
     describe('#parseToSentencesError', () => {
