@@ -377,6 +377,18 @@ function getSpeaker(cueText) {
 }
 
 /**
+ * Returns the number of cues in the vtt subtitle vttText
+ * @param  {String} vttText Subtitle text, in VTT format
+ * @return {Number}         Number of cues
+ */
+function getNumberOfCues(vttText)
+{
+    vttText = vttText.replace(/[\u200B-\u200D\uFEFF]/g, ''); //removes zero-width chars
+    const vtt = webvtt.parse(vttText);
+    return vtt.cues.length;
+}
+
+/**
  * Returns the different speakers present in the VTT formated subtitle vttText, looking at the voice ('<v>') tags in the cues.
  * @param  {String}     vttText Subtitle text, in VTT format
  * @return {String[]}           Array of speakers
@@ -499,6 +511,7 @@ export default {
     addTagToCue,
     updateCueTimes,
     updateCueText,
+    getNumberOfCues,
     checkSubtitlesEquivalency,
     generateNoiseGateString,
     getSpeaker,
