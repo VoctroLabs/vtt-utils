@@ -41,8 +41,8 @@ class Sentence {
     constructor(text = "", start = 0.0, end = 0.0, synthFlag = true) {
         this.synthesize = synthFlag;
         this.text = text;
-        this.start = start;
-        this.end = end;
+        this.start = parseFloat((start).toFixed(3));
+        this.end = parseFloat((end).toFixed(3));;
     }
 }
 
@@ -160,33 +160,56 @@ function parseToSentences(inputVttText){
         }
         // Fragment does not contain a complete sentence
         else if (endChars.indexOf(cue.text.slice(-1)) == -1) {
+            // Incorporate duration (ms) information to the cue text
+            cue.text = "<prosody duration=\"" + parseInt((1000*(cue.end - cue.start))).toString() + "ms\">" + cue.text + "</prosody>";
             let foundEndChar = false;
             let cueIdx = 1;
             while (!foundEndChar) {
                 let nextCue = inputVtt.cues[i+cueIdx];
+                // Remove voice tag from text if present, since already in previous cue
                 nextCue.text = nextCue.text.replace(/<\/v>/g, '').trim();
-                // Next fragment has several sentences. We take the end of 1st and continue
+                
+                // Next fragment has several sentences. We take the 1st and continue
                 if (nextCue.text.match(reg)) {
                     foundEndChar = true;
                     let foundSeparator = nextCue.text.match(reg)[0];
 
                     let newCue = Object.assign({}, cue);
-                    if (cue.text.indexOf('<v') >= 0) {
-                        currentVoiceTag = cue.text.substring(cue.text.indexOf('<v'), cue.text.indexOf('>') + 1);
-                        newCue.text = cue.text + nextCue.text.split(foundSeparator)[0] + foundSeparator[0];
-                    } else {
-                        newCue.text = currentVoiceTag + cue.text + nextCue.text.split(foundSeparator)[0] + foundSeparator[0];
+
+                    // Add break if cues are not adjacent in time
+                    if (newCue.end != nextCue.start) {
+                        newCue.text += "<break time=\"" + parseInt(1000*(nextCue.start-newCue.end)).toString() + "ms\"/>"
                     }
 
-                    newCue.end = nextCue.start + (nextCue.end - nextCue.start)/nextCue.text.split(foundSeparator).length;
+                    // TODO Computing new times based on number of sentences in cue. Improve (e.g. using nr of chars)
+                    let nextCueFragmentDuration = (nextCue.end - nextCue.start)/nextCue.text.split(foundSeparator).length;
+                    let nextCueFragmentText = "<prosody duration=\"" + parseInt(1000*nextCueFragmentDuration).toString() + "ms\"> " + nextCue.text.split(foundSeparator)[0] + foundSeparator[0] + "</prosody>";
+
+                    if (cue.text.indexOf('<v') >= 0) {
+                        currentVoiceTag = cue.text.substring(cue.text.indexOf('<v'), cue.text.indexOf('>') + 1);
+                        newCue.text = cue.text + nextCueFragmentText;
+                    } else {
+                        newCue.text = currentVoiceTag + cue.text + nextCueFragmentText;
+                    }
+                    
+                    newCue.end = nextCue.start + nextCueFragmentDuration;
+                    
                     newCues.push(newCue);
                     inputVtt.cues[i+cueIdx].text = nextCue.text.substring(nextCue.text.search("\\" + foundSeparator) + 2);
                     inputVtt.cues[i+cueIdx].start = newCue.end;
-                    // Next fragment contains the rest of the sentence
+                
+                // Next fragment contains the rest of the sentence
                 } else if (endChars.indexOf(nextCue.text.slice(-1)) > -1) {
                     foundEndChar = true;
                     let newCue = Object.assign({}, cue);
-                    newCue.text += " " + nextCue.text.replace(currentVoiceTag, '');
+
+                    // Add break if cues are not adjacent in time
+                    if (newCue.end != nextCue.start) {
+                        newCue.text += "<break time=\"" + parseInt(1000*(nextCue.start-newCue.end)).toString() + "ms\"/>"
+                    }
+                    // Add duration tag
+                    nextCue.text = "<prosody duration=\"" + parseInt(1000*(nextCue.end - nextCue.start)).toString() + "ms\"> " + nextCue.text + "</prosody>";
+                    newCue.text += nextCue.text.replace(currentVoiceTag, '');
                     newCue.end = nextCue.end;
                     if (newCue.text.indexOf('<v') < 0) {
                         newCue.text = currentVoiceTag + newCue.text;
@@ -194,7 +217,14 @@ function parseToSentences(inputVttText){
                     newCues.push(newCue);
                     i += cueIdx;
                 } else {
-                    cue.text += " " + nextCue.text;
+                    // Add break if cues are not adjacent in time
+                    if (cue.end != nextCue.start) {
+                        cue.text += "<break time=\"" + parseInt(1000*(nextCue.start-cue.end)).toString() + "ms\"/>"
+                    }
+                    // Add duration tag
+                    nextCue.text = "<prosody duration=\"" + parseInt(1000*(nextCue.end - nextCue.start)).toString() + "ms\"> " + nextCue.text + "</prosody>";
+                    cue.end = nextCue.end;
+                    cue.text += nextCue.text;
                     cueIdx++;
                 }
             }

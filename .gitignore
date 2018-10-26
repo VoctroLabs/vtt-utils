@@ -62,3 +62,4 @@ Temporary Items
 # Build files
 example/bundle.js
 lib
+.vscode/launch.json

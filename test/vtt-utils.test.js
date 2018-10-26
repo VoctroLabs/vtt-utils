@@ -103,7 +103,7 @@ describe('VTTUtils', () => {
         it('should return correct JSON', () => {
             const json = VTTUtils.getAsJSON('es', '[["Speaker1","ayesha"]]', data('example2.vtt'));
             const normalize = json => JSON.stringify(JSON.parse(json));
-            normalize(data('example2.json')).should.equal(normalize(json));
+            normalize(json).should.equal(normalize(data('example2.json')));
         });
     });
 
@@ -112,7 +112,7 @@ describe('VTTUtils', () => {
             const vtt_o = VTTUtils.parseToSentences(data('example4.vtt')).replace(new RegExp(/\r\n/, 'g'), '\n');
             const json = VTTUtils.getAsJSON('en', '[["Speaker1","daniel"]]', vtt_o);
             const normalize = json => JSON.stringify(JSON.parse(json));
-            normalize(data('example4.json')).should.equal(normalize(json));
+            normalize(json).should.equal(normalize(data('example4.json')));
         });
     });
 
@@ -120,7 +120,7 @@ describe('VTTUtils', () => {
         it('should return correct JSON with synthesize flag as true only in odd sentences', () => {
             const json = VTTUtils.getAsJSON('es', '[["Speaker1","ayesha"]]', data('example2.vtt'), [1,3]);
             const normalize = json => JSON.stringify(JSON.parse(json));
-            normalize(data('example2_onlyodd.json')).should.equal(normalize(json));
+            normalize(json).should.equal(normalize(data('example2_onlyodd.json')));
         });
     });
 

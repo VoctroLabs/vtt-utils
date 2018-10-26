@@ -2,7 +2,7 @@ WEBVTT
 
 1
 00:00:00.000 --> 00:00:18.849
-<v Speaker1>Este es un subtítulo con algunas particularidades.
+<v Speaker1><prosody duration="7000ms">Este es un subtítulo</prosody><break time="8539ms"/><prosody duration="3310ms"> con algunas particularidades.</prosody>
 
 2
 00:00:20.399 --> 00:00:23.248
