@@ -31,7 +31,7 @@ Generates a VTT-formatted subtitle from a SRT text
 ```
 
 #### parseToSentences(inputVttText)
-Parses an input subtitle provided as text and output the subtitle with sentence per cue
+Parses an input subtitle provided as text and output the subtitle with sentence per cue. When several cues are joined into a single one, this function automatically adds `<prosody duration>` SSML tags to keep the original time info, in milliseconds (e.g. `<prosody duration="1000ms">` for 1 second). When two non-adjacent cues are joined (i.e. the ending time of the first is not equal to the start time of the second), it adds SSML `<break>` SSML tags to keep this info (e.g. `<break time="1000ms">`) for cues separated by 1 second. 
 ```js
 /**
 * @param  {String} inputVttText Input subtitle text, in VTT format
@@ -107,6 +107,24 @@ Return the text of a cue without any tags
   * @param  {Number} transitionTime Transition time, in seconds
   * @return {String}              Noise gate values as string to introduce in JSON
   */
+ ```
+
+ #### getNumberOfCues(vttText)
+ Returns the number of cues in the vtt subtitle vttText
+ ```js
+/**
+ * @param  {String} vttText Subtitle text, in VTT format
+ * @return {Number}         Number of cues
+ */
+ ```
+
+  #### getVideoFriendlyVtt(vttText)
+ Returns the subtitle with cues short enough that they are readable together with video. It `<prosody duration>` tags are present, the function uses this information. Otherwise, it returns a subtitle with cues shorter than 70 characters.
+ ```js
+/**
+ * @param   {String} vttText    Subtitle text, in VTT format
+ * @return  {String}            Video-friendly subtitle, in VTT format
+ */
  ```
 
 ## Development

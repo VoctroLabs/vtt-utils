@@ -1,0 +1,21 @@
+WEBVTT
+
+1
+00:00:05.000 --> 00:00:08.352
+This sentence is too long to be read in a video so it must be
+
+2
+00:00:08.352 --> 00:00:10.000
+separated into two sentences.
+
+3
+00:00:10.000 --> 00:00:12.000
+This one is just ok.
+
+4
+00:00:12.000 --> 00:00:18.265
+And again, this sentence is too long for a single cue, it must be
+
+5
+00:00:18.265 --> 00:00:20.000
+separated in two.

@@ -197,4 +197,18 @@ describe('VTTUtils', () => {
         });
     });
 
+    describe('#getVideoFriendlySubtitle', () => {
+        it('should return video friendly VTT based on duration annotations', () => {
+            const vtt_i = data('example3.vtt').replace(new RegExp(/\r\n/, 'g'), '\n');;
+            const vtt_o = VTTUtils.getVideoFriendlyVtt(vtt_i).replace(new RegExp(/\r\n/, 'g'), '\n');
+            vtt_o.should.equal(data('example3_videofriendly.vtt'));
+        });
+
+        it('should return video friendly VTT cutting too long sentences', () => {
+            const vtt_i = data('example_longsentences.vtt').replace(new RegExp(/\r\n/, 'g'), '\n');;
+            const vtt_o = VTTUtils.getVideoFriendlyVtt(vtt_i).replace(new RegExp(/\r\n/, 'g'), '\n');
+            vtt_o.should.equal(data('example_longsentencesjoined.vtt'));
+        });
+    });
+
 });

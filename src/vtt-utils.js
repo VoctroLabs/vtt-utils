@@ -3,17 +3,18 @@ import webvtt from '@voctrolabs/node-webvtt';
 const regExps = {
     speaker: /<v.*?(.*?)>/, // https://www.w3.org/TR/webvtt1/#webvtt-cue-voice-span
     style: /<emphasis level="(?<style>.*)">/,
-    tags: /<.*?>/g
+    tags: /<.*?>/g,
+    duration: /<prosody duration="(?<duration>.*?)ms">(?<text>.*?)<\/prosody>/,
 };
 
 class FormatError extends Error {}
 class CompatibilityError extends Error {}
 
 function formatTime(duration) {
-    let seconds = parseInt((duration)%60)
-    , minutes = parseInt((duration/(60))%60)
-    , hours = parseInt((duration/(60*60))%24)
-    , milliseconds = parseInt(((duration)%60 - seconds).toFixed(3) * 1000);
+    let seconds = parseInt((duration) % 60),
+        minutes = parseInt((duration / (60)) % 60),
+        hours = parseInt((duration / (60 * 60)) % 24),
+        milliseconds = parseInt(((duration) % 60 - seconds).toFixed(3) * 1000);
 
     hours = (hours < 10) ? "0" + hours : hours;
     minutes = (minutes < 10) ? "0" + minutes : minutes;
@@ -23,16 +24,15 @@ function formatTime(duration) {
     return hours + ":" + minutes + ":" + seconds + "." + milliseconds;
 }
 
-function createTextFromCues(cues)
-{
+function createTextFromCues(cues) {
     let NEWLINE = "\r\n";
-    let ARROW =  " --> ";
+    let ARROW = " --> ";
     let outputText = "WEBVTT" + NEWLINE + NEWLINE;
     for (let i = 0; i < cues.length - 1; i++) {
-        outputText += (i+1).toString() + NEWLINE +  formatTime(cues[i].start) + ARROW + formatTime(cues[i].end) + NEWLINE + cues[i].text + NEWLINE + NEWLINE;
+        outputText += (i + 1).toString() + NEWLINE + formatTime(cues[i].start) + ARROW + formatTime(cues[i].end) + NEWLINE + cues[i].text + NEWLINE + NEWLINE;
     }
 
-    outputText += (cues.length).toString() + NEWLINE +  formatTime(cues[cues.length - 1].start) + ARROW + formatTime(cues[cues.length - 1].end) + NEWLINE + cues[cues.length - 1].text + NEWLINE;
+    outputText += (cues.length).toString() + NEWLINE + formatTime(cues[cues.length - 1].start) + ARROW + formatTime(cues[cues.length - 1].end) + NEWLINE + cues[cues.length - 1].text + NEWLINE;
 
     return outputText;
 }
@@ -84,14 +84,14 @@ function getDefaultStyleForSpeaker(models, speaker) {
  * @param  {String} inputSrtText Input subtitle text, in SRT format
  * @return {String}              Output subtitle text, in VTT format
  */
-function srtToVtt(inputSrtText){
+function srtToVtt(inputSrtText) {
     inputSrtText = inputSrtText.replace(/[\u200B-\u200D\uFEFF]/g, ''); //removes zero-width chars
     // Change commas in text
     let reg = /[0-9](,)[0-9]/g;
     let commasMatches = inputSrtText.match(reg);
 
     for (let i = 0; i < commasMatches.length; i++) {
-        inputSrtText = inputSrtText.replace(commasMatches[i], commasMatches[i].replace(',','.'));
+        inputSrtText = inputSrtText.replace(commasMatches[i], commasMatches[i].replace(',', '.'));
     }
 
     let NEWLINE = "\r\n";
@@ -100,11 +100,11 @@ function srtToVtt(inputSrtText){
 }
 
 /**
-* Parses an input subtitle provided as text and output the subtitle with sentence per cue
-* @param  {String} inputVttText Input subtitle text, in VTT format
-* @return {String}              Output subtitle text, in VTT format
-*/
-function parseToSentences(inputVttText){
+ * Parses an input subtitle provided as text and output the subtitle with sentence per cue
+ * @param  {String} inputVttText Input subtitle text, in VTT format
+ * @return {String}              Output subtitle text, in VTT format
+ */
+function parseToSentences(inputVttText) {
     inputVttText = inputVttText.replace(/[\u200B-\u200D\uFEFF]/g, ''); //removes zero-width chars
     let inputVtt;
     try {
@@ -136,7 +136,7 @@ function parseToSentences(inputVttText){
             let sentences = cue.text.split(reg);
             let tokens = cue.text.match(reg);
             for (let j = 0; j < sentences.length; j++) {
-                if (j < sentences.length -1){
+                if (j < sentences.length - 1) {
                     sentences[j] += tokens[j];
                 }
                 let newCue = Object.assign({}, cue);
@@ -149,26 +149,26 @@ function parseToSentences(inputVttText){
 
                 newCue.text = newCue.text.trim();
 
-                if (endChars.indexOf(newCue.text.slice(-1)) == -1){
+                if (endChars.indexOf(newCue.text.slice(-1)) == -1) {
                     newCue.text += ".";
                 }
 
-                newCue.start = cue.start + j*(cue.end - cue.start)/sentences.length;
-                newCue.end = cue.start + (j+1)*(cue.end - cue.start)/sentences.length;
+                newCue.start = cue.start + j * (cue.end - cue.start) / sentences.length;
+                newCue.end = cue.start + (j + 1) * (cue.end - cue.start) / sentences.length;
                 newCues.push(newCue);
             }
         }
         // Fragment does not contain a complete sentence
         else if (endChars.indexOf(cue.text.slice(-1)) == -1) {
             // Incorporate duration (ms) information to the cue text
-            cue.text = "<prosody duration=\"" + parseInt((1000*(cue.end - cue.start))).toString() + "ms\">" + cue.text + "</prosody>";
+            cue.text = "<prosody duration=\"" + parseInt((1000 * (cue.end - cue.start))).toString() + "ms\">" + cue.text + "</prosody>";
             let foundEndChar = false;
             let cueIdx = 1;
             while (!foundEndChar) {
-                let nextCue = inputVtt.cues[i+cueIdx];
+                let nextCue = inputVtt.cues[i + cueIdx];
                 // Remove voice tag from text if present, since already in previous cue
                 nextCue.text = nextCue.text.replace(/<\/v>/g, '').trim();
-                
+
                 // Next fragment has several sentences. We take the 1st and continue
                 if (nextCue.text.match(reg)) {
                     foundEndChar = true;
@@ -178,12 +178,12 @@ function parseToSentences(inputVttText){
 
                     // Add break if cues are not adjacent in time
                     if (newCue.end != nextCue.start) {
-                        newCue.text += "<break time=\"" + parseInt(1000*(nextCue.start-newCue.end)).toString() + "ms\"/>"
+                        newCue.text += "<break time=\"" + parseInt(1000 * (nextCue.start - newCue.end)).toString() + "ms\"/>"
                     }
 
                     // TODO Computing new times based on number of sentences in cue. Improve (e.g. using nr of chars)
-                    let nextCueFragmentDuration = (nextCue.end - nextCue.start)/nextCue.text.split(foundSeparator).length;
-                    let nextCueFragmentText = "<prosody duration=\"" + parseInt(1000*nextCueFragmentDuration).toString() + "ms\"> " + nextCue.text.split(foundSeparator)[0] + foundSeparator[0] + "</prosody>";
+                    let nextCueFragmentDuration = (nextCue.end - nextCue.start) / nextCue.text.split(foundSeparator).length;
+                    let nextCueFragmentText = "<prosody duration=\"" + parseInt(1000 * nextCueFragmentDuration).toString() + "ms\"> " + nextCue.text.split(foundSeparator)[0] + foundSeparator[0] + "</prosody>";
 
                     if (cue.text.indexOf('<v') >= 0) {
                         currentVoiceTag = cue.text.substring(cue.text.indexOf('<v'), cue.text.indexOf('>') + 1);
@@ -191,24 +191,24 @@ function parseToSentences(inputVttText){
                     } else {
                         newCue.text = currentVoiceTag + cue.text + nextCueFragmentText;
                     }
-                    
+
                     newCue.end = nextCue.start + nextCueFragmentDuration;
-                    
+
                     newCues.push(newCue);
-                    inputVtt.cues[i+cueIdx].text = nextCue.text.substring(nextCue.text.search("\\" + foundSeparator) + 2);
-                    inputVtt.cues[i+cueIdx].start = newCue.end;
-                
-                // Next fragment contains the rest of the sentence
+                    inputVtt.cues[i + cueIdx].text = nextCue.text.substring(nextCue.text.search("\\" + foundSeparator) + 2);
+                    inputVtt.cues[i + cueIdx].start = newCue.end;
+
+                    // Next fragment contains the rest of the sentence
                 } else if (endChars.indexOf(nextCue.text.slice(-1)) > -1) {
                     foundEndChar = true;
                     let newCue = Object.assign({}, cue);
 
                     // Add break if cues are not adjacent in time
                     if (newCue.end != nextCue.start) {
-                        newCue.text += "<break time=\"" + parseInt(1000*(nextCue.start-newCue.end)).toString() + "ms\"/>"
+                        newCue.text += "<break time=\"" + parseInt(1000 * (nextCue.start - newCue.end)).toString() + "ms\"/>"
                     }
                     // Add duration tag
-                    nextCue.text = "<prosody duration=\"" + parseInt(1000*(nextCue.end - nextCue.start)).toString() + "ms\"> " + nextCue.text + "</prosody>";
+                    nextCue.text = "<prosody duration=\"" + parseInt(1000 * (nextCue.end - nextCue.start)).toString() + "ms\"> " + nextCue.text + "</prosody>";
                     newCue.text += nextCue.text.replace(currentVoiceTag, '');
                     newCue.end = nextCue.end;
                     if (newCue.text.indexOf('<v') < 0) {
@@ -219,10 +219,10 @@ function parseToSentences(inputVttText){
                 } else {
                     // Add break if cues are not adjacent in time
                     if (cue.end != nextCue.start) {
-                        cue.text += "<break time=\"" + parseInt(1000*(nextCue.start-cue.end)).toString() + "ms\"/>"
+                        cue.text += "<break time=\"" + parseInt(1000 * (nextCue.start - cue.end)).toString() + "ms\"/>"
                     }
                     // Add duration tag
-                    nextCue.text = "<prosody duration=\"" + parseInt(1000*(nextCue.end - nextCue.start)).toString() + "ms\"> " + nextCue.text + "</prosody>";
+                    nextCue.text = "<prosody duration=\"" + parseInt(1000 * (nextCue.end - nextCue.start)).toString() + "ms\"> " + nextCue.text + "</prosody>";
                     cue.end = nextCue.end;
                     cue.text += nextCue.text;
                     cueIdx++;
@@ -240,12 +240,12 @@ function parseToSentences(inputVttText){
 }
 
 /**
-* Checks that the start and end times of cues in two VTT subtitles are equal
-* @param  {String} srcVttText    Source subtitle text, in VTT format
-* @param  {String} targetVttText Target subtitle text, in VTT format
-* @return {Boolean}              True if both are equivalent, false otherwise
-*/
-function checkSubtitlesEquivalency(srcVttText, targetVttText){
+ * Checks that the start and end times of cues in two VTT subtitles are equal
+ * @param  {String} srcVttText    Source subtitle text, in VTT format
+ * @param  {String} targetVttText Target subtitle text, in VTT format
+ * @return {Boolean}              True if both are equivalent, false otherwise
+ */
+function checkSubtitlesEquivalency(srcVttText, targetVttText) {
     srcVttText = srcVttText.replace(/[\u200B-\u200D\uFEFF]/g, ''); //removes zero-width chars
     targetVttText = targetVttText.replace(/[\u200B-\u200D\uFEFF]/g, ''); //removes zero-width chars
 
@@ -268,8 +268,8 @@ function checkSubtitlesEquivalency(srcVttText, targetVttText){
     }
 
     for (let i = 0; i < srcVtt.cues.length; i++) {
-        if (srcVtt.cues[i].start != targetVtt.cues[i].start || srcVtt.cues[i].end != targetVtt.cues[i].end){
-            throw new CompatibilityError('Start and end times differ at cue ' + (i+1).toString())
+        if (srcVtt.cues[i].start != targetVtt.cues[i].start || srcVtt.cues[i].end != targetVtt.cues[i].end) {
+            throw new CompatibilityError('Start and end times differ at cue ' + (i + 1).toString())
         }
     }
 
@@ -284,7 +284,7 @@ function checkSubtitlesEquivalency(srcVttText, targetVttText){
  * @param  {Number} endTime      New end time, in seconds
  * @return {String}              inputVttText modified
  */
-function updateCueTimes(inputVttText, cueIdx, startTime, endTime){
+function updateCueTimes(inputVttText, cueIdx, startTime, endTime) {
     inputVttText = inputVttText.replace(/[\u200B-\u200D\uFEFF]/g, ''); //removes zero-width chars
     cueIdx = parseInt(cueIdx);
     const inputVtt = webvtt.parse(inputVttText);
@@ -301,7 +301,7 @@ function updateCueTimes(inputVttText, cueIdx, startTime, endTime){
  * @param  {String} newText      New text for the cue
  * @return {String}              inputVttText modified
  */
-function updateCueText(inputVttText, cueIdx, newText){
+function updateCueText(inputVttText, cueIdx, newText) {
     inputVttText = inputVttText.replace(/[\u200B-\u200D\uFEFF]/g, ''); //removes zero-width chars
     cueIdx = parseInt(cueIdx);
     const inputVtt = webvtt.parse(inputVttText);
@@ -318,7 +318,7 @@ function updateCueText(inputVttText, cueIdx, newText){
     return createTextFromCues(inputVtt.cues);
 }
 
-function updateCueTimes(inputVttText, cueIdx, startTime, endTime){
+function updateCueTimes(inputVttText, cueIdx, startTime, endTime) {
     inputVttText = inputVttText.replace(/[\u200B-\u200D\uFEFF]/g, ''); //removes zero-width chars
     cueIdx = parseInt(cueIdx);
     const inputVtt = webvtt.parse(inputVttText);
@@ -337,7 +337,7 @@ function updateCueTimes(inputVttText, cueIdx, startTime, endTime){
  * @param  {String} value        Value for the attribute
  * @return {String}              inputVttText modified
  */
-function addTagToCue(inputVttText, cueIdx, tag, attributeName, attributeValue){
+function addTagToCue(inputVttText, cueIdx, tag, attributeName, attributeValue) {
     inputVttText = inputVttText.replace(/[\u200B-\u200D\uFEFF]/g, ''); //removes zero-width chars
     cueIdx = parseInt(cueIdx);
     const inputVtt = webvtt.parse(inputVttText);
@@ -375,7 +375,7 @@ function addTagToCue(inputVttText, cueIdx, tag, attributeName, attributeValue){
  * @param  {Number} cueIdx       Index of the cue where the style must be applied (first cue = index 0)
  * @return {String}              inputVttText modified
  */
-function assignStyleToCue(inputVttText, style, cueIdx){
+function assignStyleToCue(inputVttText, style, cueIdx) {
     inputVttText = inputVttText.replace(/[\u200B-\u200D\uFEFF]/g, ''); //removes zero-width chars
     style = "voiceful:" + style;
     cueIdx = parseInt(cueIdx);
@@ -411,8 +411,7 @@ function getSpeaker(cueText) {
  * @param  {String} vttText Subtitle text, in VTT format
  * @return {Number}         Number of cues
  */
-function getNumberOfCues(vttText)
-{
+function getNumberOfCues(vttText) {
     vttText = vttText.replace(/[\u200B-\u200D\uFEFF]/g, ''); //removes zero-width chars
     const vtt = webvtt.parse(vttText);
     return vtt.cues.length;
@@ -423,7 +422,7 @@ function getNumberOfCues(vttText)
  * @param  {String}     vttText Subtitle text, in VTT format
  * @return {String[]}           Array of speakers
  */
-function getSpeakers(vttText){
+function getSpeakers(vttText) {
     vttText = vttText.replace(/[\u200B-\u200D\uFEFF]/g, ''); //removes zero-width chars
     const vtt = webvtt.parse(vttText);
     const speakers = new Map();
@@ -434,18 +433,18 @@ function getSpeakers(vttText){
 // Return the style of a cue
 function getStyle(cueText) {
     const match = regExps['style'].exec(cueText);
-    return match? match[1] : match;
+    return match ? match[1] : match;
 }
 
 /**
-* Generates JSON-formatted to generate synthesis with voiceful
-* @param  {String}      language            Language identifier
-* @param  {String}      modelsString        Array with speakers-voice models-(optional)defaultStyle correspondence (e.g. '[["speaker1","model1","style1"],["speaker2","model2"]]')
-* @param  {String}      vttText             Subtitle text, in VTT format
-* @param  {Number[]}    selectedSentences   Array with indexes of sentences to be synthesized (if none given, all are synthesized)
-* @return {String}                          JSON-formatted string for synthesis
-*/
-function getAsJSON(language, modelsString, vttText, selectedSentences = []){
+ * Generates JSON-formatted to generate synthesis with voiceful
+ * @param  {String}      language            Language identifier
+ * @param  {String}      modelsString        Array with speakers-voice models-(optional)defaultStyle correspondence (e.g. '[["speaker1","model1","style1"],["speaker2","model2"]]')
+ * @param  {String}      vttText             Subtitle text, in VTT format
+ * @param  {Number[]}    selectedSentences   Array with indexes of sentences to be synthesized (if none given, all are synthesized)
+ * @return {String}                          JSON-formatted string for synthesis
+ */
+function getAsJSON(language, modelsString, vttText, selectedSentences = []) {
     vttText = vttText.replace(/[\u200B-\u200D\uFEFF]/g, ''); //removes zero-width chars
 
     let output = new Object();
@@ -460,11 +459,11 @@ function getAsJSON(language, modelsString, vttText, selectedSentences = []){
         const speaker = getSpeaker(cue.text);
         if (!output.speakers.hasOwnProperty(speaker)) {
             output.speakers[speaker] = new SpeakerContent(
-              language, getModelForSpeaker(models, speaker), getDefaultStyleForSpeaker(models, speaker));
+                language, getModelForSpeaker(models, speaker), getDefaultStyleForSpeaker(models, speaker));
         }
 
         var synthFlag = false;
-        if (selectedSentences.includes(i+1) || selectedSentences.length == 0) {
+        if (selectedSentences.includes(i + 1) || selectedSentences.length == 0) {
             synthFlag = true;
         }
 
@@ -478,7 +477,7 @@ function getAsJSON(language, modelsString, vttText, selectedSentences = []){
 /**
  * Return the text of a cue without speaker tag
  * @param  {String} cueText Text from a sentence of a subtitle
- * @return {String}              cueText without the speaker tag
+ * @return {String}         cueText without the speaker tag
  */
 function removeSpeaker(cueText) {
     return cueText.replace(regExps['speaker'], '');
@@ -487,10 +486,10 @@ function removeSpeaker(cueText) {
 /**
  * Return the text of a cue without any tags
  * @param  {String} cueText Text from a sentence of a subtitle
- * @return {String}              cueText without tags
+ * @return {String}         cueText without tags
  */
 function removeTags(cueText) {
-  return cueText.replace(regExps['tags'], '');
+    return cueText.replace(regExps['tags'], '');
 }
 
 /**
@@ -499,8 +498,7 @@ function removeTags(cueText) {
  * @param  {Number} transitionTime Transition time, in seconds
  * @return {String}              Noise gate values as string to introduce in JSON
  */
-function generateNoiseGateString(vttText, transitionTime)
-{
+function generateNoiseGateString(vttText, transitionTime) {
     vttText = vttText.replace(/[\u200B-\u200D\uFEFF]/g, ''); //removes zero-width chars
 
     const vtt = webvtt.parse(vttText);
@@ -512,32 +510,106 @@ function generateNoiseGateString(vttText, transitionTime)
         let currentEnd = vtt.cues[i].end;
         let previousEnd = 0.0;
         if (i > 0) {
-            previousEnd = vtt.cues[i-1].end;
+            previousEnd = vtt.cues[i - 1].end;
         }
         let nextStart = vtt.cues[i].end + transitionTime;
         if (i < vtt.cues.length - 1) {
-            nextStart = vtt.cues[i+1].start;
+            nextStart = vtt.cues[i + 1].start;
         }
 
         if (currentStart - transitionTime > previousEnd + transitionTime) {
-            points.push([currentStart-transitionTime, 1.0]);
+            points.push([currentStart - transitionTime, 1.0]);
             points.push([currentStart, 0.0]);
         }
 
         // Check if we need to add out points
-        if (currentEnd + transitionTime < nextStart - transitionTime){
+        if (currentEnd + transitionTime < nextStart - transitionTime) {
             points.push([currentEnd, 0.0]);
-            points.push([currentEnd+transitionTime, 1.0]);
+            points.push([currentEnd + transitionTime, 1.0]);
         }
     }
 
     return JSON.stringify(points);
 }
 
+/**
+ * Returns the subtitle with cues short enough that they are readable together with video
+ * @param   {String} vttText    Subtitle text, in VTT format
+ * @return  {String}            Video-friendly subtitle, in VTT format
+ */
+function getVideoFriendlyVtt(vttText) {
+    vttText = vttText.replace(/[\u200B-\u200D\uFEFF]/g, ''); //removes zero-width chars
+
+    let vtt;
+    try {
+        vtt = webvtt.parse(vttText);
+    } catch (e) {
+        throw new FormatError(e.message);
+    }
+
+    let newCues = [];
+    const durationRegex = RegExp(regExps['duration'], 'g');
+
+    let useDurationTags = durationRegex.exec(vttText) != null;
+
+    for (let i = 0; i < vtt.cues.length; i++) {
+        const cue = vtt.cues[i];
+        
+        let match;
+        let noDurationTags = true;
+        let durationSum = 0.0;
+
+        while ((match = durationRegex.exec(cue.text)) !== null) {
+            noDurationTags = false;
+            let startTime = (durationSum / 1000.0) + cue.start;
+            durationSum += parseFloat(match[1]);
+            let endTime = startTime + (match[1] / 1000.0);
+            let text = match[2].trim();
+            
+            let newCue = Object.assign({}, cue);
+            newCue.start = startTime;
+            newCue.end = endTime;
+            newCue.text = removeTags(text).trim();
+            newCues.push(newCue);
+        }
+
+        if (noDurationTags){
+            if (cue.text.length > 70 && !useDurationTags) { // TODO assuming we won't have 3 sentences, just 2
+                cue.text = removeTags(cue.text).trim();
+
+                let separationSpaceIndex = cue.text.substring(0, 69).lastIndexOf(' ');
+                let firstCueText = cue.text.substring(0, separationSpaceIndex);
+                let secondCueText = cue.text.substring(separationSpaceIndex+1, cue.text.length);
+                let separationTime = cue.start + (separationSpaceIndex/cue.text.length)*(cue.end-cue.start);
+
+                let firstCue = Object.assign({}, cue);
+                firstCue.start = cue.start;
+                firstCue.end = separationTime;
+                firstCue.text = firstCueText;
+                newCues.push(firstCue);
+
+                let secondCue = Object.assign({}, cue);
+                secondCue.start = separationTime;
+                secondCue.end = cue.end;
+                secondCue.text = secondCueText;
+                newCues.push(secondCue);
+
+                // No need to rearrange, just push as is
+            } else {
+                cue.text = removeTags(cue.text).trim();
+                newCues.push(cue);
+            }
+        }   
+    }
+
+    return createTextFromCues(newCues);
+}
+
 export default {
     CompatibilityError,
     FormatError,
     assignStyleToCue,
+    getVideoFriendlyVtt,
     addTagToCue,
     updateCueTimes,
     updateCueText,
