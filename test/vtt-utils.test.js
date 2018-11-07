@@ -27,6 +27,12 @@ describe('VTTUtils', () => {
             const vtt_o = VTTUtils.parseToSentences(vtt_i).replace(new RegExp(/\r\n/, 'g'), '\n');
             vtt_o.should.equal(data('example5.vtt'));
         });
+
+        it('should return correct VTT, case with empty cue', () => {
+            const vtt_i = VTTUtils.srtToVtt(data('example6.srt'));
+            const vtt_o = VTTUtils.parseToSentences(vtt_i).replace(new RegExp(/\r\n/, 'g'), '\n');
+            vtt_o.should.equal(data('example6.vtt'));
+        });
     });
 
     describe('#parseToSentencesError', () => {

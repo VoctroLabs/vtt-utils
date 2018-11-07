@@ -119,6 +119,11 @@ function parseToSentences(inputVttText) {
         let cue = inputVtt.cues[i];
         // remove voice closing tags, unnecessary since we are going to have a single voice per cue
         cue.text = cue.text.replace(/<\/v>/g, '').trim();
+
+        if (cue.text === "") {
+            continue;
+        }
+
         let endsWithPoint = false;
 
         let currentVoiceTag;
