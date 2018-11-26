@@ -140,6 +140,7 @@ function parseToSentences(inputVttText) {
         if (cue.text.indexOf(". ") >= 0 || cue.text.indexOf("? ") >= 0 || cue.text.indexOf("! ") >= 0) {
             let sentences = cue.text.split(reg);
             let tokens = cue.text.match(reg);
+            let proportion = 0.0; // we use this to keep track of how much of the sentence is read after each division
             for (let j = 0; j < sentences.length; j++) {
                 if (j < sentences.length - 1) {
                     sentences[j] += tokens[j];
@@ -158,8 +159,10 @@ function parseToSentences(inputVttText) {
                     newCue.text += ".";
                 }
 
-                newCue.start = cue.start + j * (cue.end - cue.start) / sentences.length;
-                newCue.end = cue.start + (j + 1) * (cue.end - cue.start) / sentences.length;
+                newCue.start = cue.start + proportion * (cue.end - cue.start);
+                // update proportion value based on number of chars in the divided sentence
+                proportion += sentences[j].length / cue.text.length;
+                newCue.end = cue.start + proportion * (cue.end - cue.start);
                 newCues.push(newCue);
             }
         }
@@ -187,8 +190,9 @@ function parseToSentences(inputVttText) {
                     }
 
                     // TODO Computing new times based on number of sentences in cue. Improve (e.g. using nr of chars)
-                    let nextCueFragmentDuration = (nextCue.end - nextCue.start) / nextCue.text.split(foundSeparator).length;
-                    let nextCueFragmentText = "<prosody duration=\"" + parseInt(1000 * nextCueFragmentDuration).toString() + "ms\"> " + nextCue.text.split(foundSeparator)[0] + foundSeparator[0] + "</prosody>";
+                    let proportion = (nextCue.text.split(foundSeparator)[0] + foundSeparator).length / nextCue.text.length;
+                    let nextCueFragmentDuration = (nextCue.end - nextCue.start) * proportion;
+                    let nextCueFragmentText = "<prosody duration=\"" + Math.round(1000 * nextCueFragmentDuration).toString() + "ms\"> " + nextCue.text.split(foundSeparator)[0] + foundSeparator[0] + "</prosody>";
 
                     if (cue.text.indexOf('<v') >= 0) {
                         currentVoiceTag = cue.text.substring(cue.text.indexOf('<v'), cue.text.indexOf('>') + 1);
