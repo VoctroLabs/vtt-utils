@@ -187,6 +187,14 @@ describe('VTTUtils', () => {
             const style = VTTUtils.getStyle("<v Speaker2>I'm Speaker2");
             should.not.exist(style);
         })
+
+        it('should accept enclosing tags afetrwards', () => {
+            const text = `<v Speaker1><emphasis level="voiceful:neutral">` + 
+            `<prosody duration="2583ms">we start by washing the rice</prosody>` + 
+            `<prosody duration="2019ms"> inside the pot, directly.</prosody></emphasis>`;
+            const style = VTTUtils.getStyle(text);
+            style.should.equal("voiceful:neutral");
+        });
     });
 
     describe('#removeSpeaker', () => {
