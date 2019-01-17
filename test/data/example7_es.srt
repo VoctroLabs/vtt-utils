@@ -1,0 +1,52 @@
+﻿1
+00:00:00,540 --> 00:00:03,720
+La creciente y galopante complejidad informática
+
+2
+00:00:03,740 --> 00:00:05,380
+está incrementando nuestra seguridad?
+
+3
+00:00:05,480 --> 00:00:07,740
+o está incrementando nuestra vulnerabilidad?
+
+4
+00:00:08,480 --> 00:00:10,840
+Veamos. Un fallo informático,
+
+5
+00:00:10,920 --> 00:00:15,200
+ha provocado el caos durante más de 48 horas en el aeropuerto de Heathrow.
+
+6
+00:00:15,300 --> 00:00:16,520
+Y unos días antes,
+
+7
+00:00:16,660 --> 00:00:17,840
+un ciberataque, 
+
+8
+00:00:17,960 --> 00:00:21,620
+había secuestrado 300,000 ordenadores en 150 países.
+
+9
+00:00:21,660 --> 00:00:23,200
+Y el desenlace demostraba,
+
+10
+00:00:23,240 --> 00:00:25,700
+ aún mayor sorprendente fragilidad,
+
+11
+00:00:25,700 --> 00:00:27,060
+puesto que solo pudo detener,
+
+12
+00:00:27,080 --> 00:00:28,940
+ un joven británico de 22 años,
+
+13
+00:00:28,980 --> 00:00:32,000
+que había registrado un dominio web, por menos de 10 euros.
+

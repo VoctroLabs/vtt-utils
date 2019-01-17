@@ -1,0 +1,52 @@
+﻿1
+00:00:00,540 --> 00:00:03,720
+The growing complexity of computers
+
+2
+00:00:03,740 --> 00:00:05,380
+is increasing our security?
+
+3
+00:00:05,480 --> 00:00:07,740
+or rather increasing our vulnerability?
+
+4
+00:00:08,480 --> 00:00:10,840
+Let's see. A computer failure,
+
+5
+00:00:10,920 --> 00:00:15,200
+has caused a more than 48 hour of chaos in the Heathrow airport.
+
+6
+00:00:15,300 --> 00:00:16,520
+And a few days before, 
+
+7
+00:00:16,660 --> 00:00:17,840
+a cyberattack,
+
+8
+00:00:17,960 --> 00:00:21,620
+had affected three hundred thousand computers in one hundred fifty countries.
+
+9
+00:00:21,660 --> 00:00:23,200
+And the outcome showed,
+
+10
+00:00:23,240 --> 00:00:25,700
+an even more shocking fragility,
+
+11
+00:00:25,700 --> 00:00:27,060
+since the only arrested  person,
+
+12
+00:00:27,080 --> 00:00:28,940
+was a twenty-two year old British young man,
+
+13
+00:00:28,980 --> 00:00:32,000
+who had registered a web domain, for less than 10 euros.
+

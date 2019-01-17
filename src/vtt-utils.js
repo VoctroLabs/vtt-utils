@@ -9,6 +9,7 @@ const regExps = {
 
 class FormatError extends Error {}
 class CompatibilityError extends Error {}
+class CompatibilityTimesError extends Error {}
 
 function formatTime(duration) {
     let seconds = parseInt((duration) % 60),
@@ -133,10 +134,10 @@ function parseToSentences(inputVttText) {
             currentVoiceTag = '<v Speaker1>';
         }
 
-        // more than one sentence in fragment
         const separators = ["\\\. ", "\\\? ", "\\\! "];
         let reg = new RegExp(separators.join('|'), 'g');
         const endChars = ['.', '!', '?'];
+        // more than one sentence in fragment
         if (cue.text.indexOf(". ") >= 0 || cue.text.indexOf("? ") >= 0 || cue.text.indexOf("! ") >= 0) {
             let sentences = cue.text.split(reg);
             let tokens = cue.text.match(reg);
@@ -155,15 +156,17 @@ function parseToSentences(inputVttText) {
 
                 newCue.text = newCue.text.trim();
 
-                if (endChars.indexOf(newCue.text.slice(-1)) == -1) {
-                    newCue.text += ".";
-                }
-
                 newCue.start = cue.start + proportion * (cue.end - cue.start);
                 // update proportion value based on number of chars in the divided sentence
                 proportion += sentences[j].length / cue.text.length;
                 newCue.end = cue.start + proportion * (cue.end - cue.start);
-                newCues.push(newCue);
+                // If it does not finish sentence, store it in the original cue to proceed joining with next one
+                if (endChars.indexOf(newCue.text.slice(-1)) == -1) {
+                    inputVtt.cues[i] = newCue;
+                    i = i-1;
+                } else {
+                    newCues.push(newCue);
+                }
             }
         }
         // Fragment does not contain a complete sentence
@@ -249,7 +252,7 @@ function parseToSentences(inputVttText) {
 }
 
 /**
- * Checks that the start and end times of cues in two VTT subtitles are equal
+ * Checks that the number of cues in two VTT subtitles are equal
  * @param  {String} srcVttText    Source subtitle text, in VTT format
  * @param  {String} targetVttText Target subtitle text, in VTT format
  * @return {Boolean}              True if both are equivalent, false otherwise
@@ -276,12 +279,39 @@ function checkSubtitlesEquivalency(srcVttText, targetVttText) {
         throw new CompatibilityError('Subtitles have different number of cues (' + srcVtt.cues.length.toString() + ' and ' + targetVtt.cues.length + ')')
     }
 
-    for (let i = 0; i < srcVtt.cues.length; i++) {
-        if (srcVtt.cues[i].start != targetVtt.cues[i].start || srcVtt.cues[i].end != targetVtt.cues[i].end) {
-            throw new CompatibilityError('Start and end times differ at cue ' + (i + 1).toString())
-        }
+    return true;
+}
+
+/**
+ * Checks that the start and end times of cues in two VTT subtitles are equal
+ * @param {String} srcVttText       Source subtitle text, in VTT format
+ * @param {String} targetVttText    Target subtitle text, in VTT format
+ * @param {Number} tolerance        Allowed differences in times between subtitles, in seconds
+ * @return {Boolean}                True if both are equivalent, false otherwise
+ */
+function checkSubtitlesTimesEquivalency(srcVttText, targetVttText, tolerance) {
+    srcVttText = srcVttText.replace(/[\u200B-\u200D\uFEFF]/g, ''); //removes zero-width chars
+    targetVttText = targetVttText.replace(/[\u200B-\u200D\uFEFF]/g, ''); //removes zero-width chars
+
+    var srcVtt;
+    try {
+        srcVtt = webvtt.parse(srcVttText);
+    } catch (e) {
+        throw new FormatError('Error in src subtitle: ' + e.message)
     }
 
+    var targetVtt;
+    try {
+        targetVtt = webvtt.parse(targetVttText);
+    } catch (e) {
+        throw new FormatError('Error in target subtitle: ' + e.message)
+    }
+
+    for (let i = 0; i < srcVtt.cues.length; i++) {
+        if (Math.abs(srcVtt.cues[i].start - targetVtt.cues[i].start) > tolerance || Math.abs(srcVtt.cues[i].end - targetVtt.cues[i].end) > tolerance) {
+            throw new CompatibilityTimesError('Start and end times differ at cue ' + (i + 1).toString())
+        }
+    }
     return true;
 }
 
@@ -616,6 +646,7 @@ function getVideoFriendlyVtt(vttText) {
 
 export default {
     CompatibilityError,
+    CompatibilityTimesError,
     FormatError,
     assignStyleToCue,
     getVideoFriendlyVtt,
@@ -624,6 +655,7 @@ export default {
     updateCueText,
     getNumberOfCues,
     checkSubtitlesEquivalency,
+    checkSubtitlesTimesEquivalency,
     generateNoiseGateString,
     getSpeaker,
     getSpeakers,

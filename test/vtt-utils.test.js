@@ -53,6 +53,24 @@ describe('VTTUtils', () => {
             const vtt_o_trg = VTTUtils.parseToSentences(vtt_trg).replace(new RegExp(/\r\n/, 'g'), '\n');
             VTTUtils.checkSubtitlesEquivalency(vtt_o_src, vtt_o_trg).should.equal(true);
         });
+
+        it('should return true for equivalent subtitles that are parsed into different length cues', () => {
+            const vtt_src = VTTUtils.srtToVtt(data('example7_en.srt'));
+            const vtt_trg = VTTUtils.srtToVtt(data('example7_es.srt'));
+            const vtt_o_src = VTTUtils.parseToSentences(vtt_src).replace(new RegExp(/\r\n/, 'g'), '\n');
+            const vtt_o_trg = VTTUtils.parseToSentences(vtt_trg).replace(new RegExp(/\r\n/, 'g'), '\n');
+            VTTUtils.checkSubtitlesEquivalency(vtt_o_src, vtt_o_trg).should.equal(true);
+        });
+    });
+
+    describe('#checkSubtitlesTimesEquivalency', () => {
+        it('should return true for equivalent subtitles that are parsed into different length cues and with times that differ less than threshold', () => {
+            const vtt_src = VTTUtils.srtToVtt(data('example7_en.srt'));
+            const vtt_trg = VTTUtils.srtToVtt(data('example7_es.srt'));
+            const vtt_o_src = VTTUtils.parseToSentences(vtt_src).replace(new RegExp(/\r\n/, 'g'), '\n');
+            const vtt_o_trg = VTTUtils.parseToSentences(vtt_trg).replace(new RegExp(/\r\n/, 'g'), '\n');
+            VTTUtils.checkSubtitlesTimesEquivalency(vtt_o_src, vtt_o_trg, 0.3).should.equal(true);
+        });
     });
 
     describe('#checkSubtitlesEquivalencyParseErrorInSrc', () => {
@@ -93,15 +111,26 @@ describe('VTTUtils', () => {
     });
 
     describe('#checkSubtitlesEquivalencyCompatibilityErrorDifferentTimes', () => {
-        it('should throw CompatibilityError for subtitles with different times at cue 7', () => {
+        it('should throw CompatibilityTimesError for subtitles with different times at cue 7', () => {
             (() => {
                 const vtt_src = VTTUtils.srtToVtt(data('equivalent_1_differenttimes.srt'));
                 const vtt_trg = VTTUtils.srtToVtt(data('equivalent_2.srt'));
                 const vtt_o_src = VTTUtils.parseToSentences(vtt_src).replace(new RegExp(/\r\n/, 'g'), '\n');
                 const vtt_o_trg = VTTUtils.parseToSentences(vtt_trg).replace(new RegExp(/\r\n/, 'g'), '\n');
-                VTTUtils.checkSubtitlesEquivalency(vtt_o_src, vtt_o_trg);
+                VTTUtils.checkSubtitlesTimesEquivalency(vtt_o_src, vtt_o_trg, 0.0);
             })
-            .should.throw(VTTUtils.CompatibilityError, /cue 7/);
+            .should.throw(VTTUtils.CompatibilityTimesError, /cue 7/);
+        });
+
+        it('should throw CompatibilityTimesError for subtitles with different times at cue 4 after parsing', () => {
+            (() => {
+                const vtt_src = VTTUtils.srtToVtt(data('example7_es.srt'));
+                const vtt_trg = VTTUtils.srtToVtt(data('example7_en.srt'));
+                const vtt_o_src = VTTUtils.parseToSentences(vtt_src).replace(new RegExp(/\r\n/, 'g'), '\n');
+                const vtt_o_trg = VTTUtils.parseToSentences(vtt_trg).replace(new RegExp(/\r\n/, 'g'), '\n');
+                VTTUtils.checkSubtitlesTimesEquivalency(vtt_o_src, vtt_o_trg, 0.2);
+            })
+            .should.throw(VTTUtils.CompatibilityTimesError, /cue 3/);
         });
     });
 
