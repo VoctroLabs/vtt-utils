@@ -2,7 +2,7 @@ import webvtt from '@voctrolabs/node-webvtt';
 
 const regExps = {
     speaker: /<v.*?(.*?)>/, // https://www.w3.org/TR/webvtt1/#webvtt-cue-voice-span
-    style: /<emphasis level="(?<style>.*)">/,
+    style: /<emphasis level="(?<style>.*?)">/,
     tags: /<.*?>/g,
     duration: /<prosody duration="(?<duration>.*?)ms">(?<text>.*?)<\/prosody>/,
 };
